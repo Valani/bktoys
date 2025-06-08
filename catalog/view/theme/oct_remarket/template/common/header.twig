@@ -297,13 +297,13 @@ $('#oct-infobar-btn').on('click', function () {
             <div class="d-flex align-items-center mr-3">
                 {% if product_views_count is defined and product_views_count %}
                 <div onclick="rmSidebar('{{ oct_product_views }}', 'viewed');" class="rm-header-icon rm-header-icon-viewed mr-2" title="{{ oct_product_views }}" style="cursor: pointer; color: #333;">
-                    <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-viewed" alt="{{ oct_product_views }}" width="24" height="24">
+                    <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-viewed" alt="{{ oct_product_views }}" width="24" height="24" style="filter: brightness(0);">
                     <span class="rm-header-quantity" style="color: #333;">{{ product_views_count }}</span>
                 </div>
                 {% endif %}
                 {% if oct_bar_data.show_wishlist is defined and oct_bar_data.show_wishlist %}
                 <a href="{{ wishlist_link }}" class="rm-header-icon rm-header-icon-wishlist mr-2" title="{{ fixed_bar_wishlist }}" style="color: #333; text-decoration: none;">
-                    <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-wishlist" alt="{{ fixed_bar_wishlist }}" width="24" height="20">
+                    <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-wishlist" alt="{{ fixed_bar_wishlist }}" width="24" height="20" style="filter: brightness(0);">
                     <span class="rm-header-quantity" style="color: #333;">{{ wishlist_total }}</span>
                 </a>
                 {% endif %}
@@ -317,9 +317,9 @@ $('#oct-infobar-btn').on('click', function () {
             <div class="rm-header-account">
                 {% if logged %}
                 <div class="rm-dropdown-box">
-                    <span title="{{ text_account }}" class="rm-dropdown-toggle d-flex align-items-center">
-                        <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-account" alt="{{ text_account }}" width="20" height="22" class="mr-2">
-                        <span>{{ text_account }}</span>
+                    <span title="{{ text_account }}" class="rm-dropdown-toggle d-flex align-items-center" style="color: #333;">
+                        <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-account" alt="{{ text_account }}" width="20" height="22" class="mr-2" style="filter: brightness(0);">
+                        <span style="color: #333;">{{ text_account }}</span>
                     </span>
                     <div class="rm-dropdown">
                         <div class="rm-dropdown-inner">
@@ -332,9 +332,9 @@ $('#oct-infobar-btn').on('click', function () {
                     </div>
                 </div>
                 {% else %}
-                <div onclick="octPopupLogin();" title="Вхід" class="d-flex align-items-center oct-fixed-bar-item oct-fixed-bar-item-viewed" role="button" aria-haspopup="true" style="cursor: pointer;">
-                    <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-account" alt="Вхід" width="20" height="22" class="mr-2">
-                    <span>Вхід</span>
+                <div onclick="octPopupLogin();" title="Вхід" class="d-flex align-items-center oct-fixed-bar-item oct-fixed-bar-item-viewed" role="button" aria-haspopup="true" style="cursor: pointer; color: #333;">
+                    <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-account" alt="Вхід" width="20" height="22" class="mr-2" style="filter: brightness(0);">
+                    <span style="color: #333;">Вхід</span>
                 </div>
                 {% endif %}
             </div>

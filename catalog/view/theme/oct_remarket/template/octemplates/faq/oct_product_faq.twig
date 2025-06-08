@@ -1,0 +1,175 @@
+{% if not is_ajax %}
+<div class="tab-pane rm-content p-0 rm-product-tabs-questions" id="{{ oct_id_div }}">
+    <div class="rm-product-tabs-questions-top">
+        <button type="button" class="rm-btn dark" data-toggle="modal" data-target="#faqModal">{{ text_faq_button }}</button>
+        {% if oct_faqs is empty %}
+            <p class="my-3 text-center text-sm-left"><b>{{ text_faq_title }}</b></p>
+            <img src="catalog/view/theme/oct_remarket/img/answers-empty.svg" alt="" class="img-fluid d-block d-md-none my-4 mx-auto" width="360" height="199" />
+        {% endif %}
+        <div class="modal" id="faqModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered narrow" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="modal-title">{{ text_faq }}</div>
+                        <button type="button" class="modal-close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true" class="modal-close-icon modal-close-left"></span>
+                            <span aria-hidden="true" class="modal-close-icon modal-close-right"></span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="form-faq" enctype="multipart/form-data" method="post">
+                            <div class="pb-4">{{ text_faq_text }}</div>
+                            <div class="form-group">
+                                <input type="text" name="name" {% if firstname %}value="{{ firstname }}"{% endif %} class="form-control" id="faqInputName" placeholder="{{ entry_name }}">
+                            </div>
+                            <div class="form-group pb-3">
+                                <label for="faqInputEmail" class="fsz-14 dark-text fw-500 pb-1">{{ text_faq_email }}</label>
+                                <span class="small">{{ text_faq_email_detail }}</span>
+                                <input type="text" name="email" {% if email_user %}value="{{ email_user }}"{% endif %} class="form-control" id="faqInputEmail" placeholder="{{ text_faq_email }}">
+                            </div>
+                            <div class="form-group">
+                                <textarea id="faqText" name="text" class="form-control" placeholder="{{ text_faq_textarea }}"></textarea>
+                            </div>
+                            <div class="form-group">
+                                {{ captcha }}
+                            </div>
+                            <button type="button" id="button-oct_faq" class="rm-btn dark">{{ button_continue }}</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="{{ oct_faqs_id }}">
+{% endif %}
+
+{% if oct_faqs %}
+    {% for oct_faq in oct_faqs %}
+    <div class="rm-product-tabs-questions-item">
+        <div class="rm-product-tabs-questions-item-info d-flex justify-content-between d-md-block">
+            <span class="rm-product-tabs-questions-item-author">{{ text_faq_autor }}{{ oct_faq.author }}</span>
+            <span class="rm-product-tabs-questions-item-date">{{ oct_faq.date_added }}</span>
+        </div>
+        <div class="rm-product-tabs-questions-item-text">
+            <p>{{ oct_faq.text }}</p>
+        </div>
+        {% if oct_faq.answer %}
+        <div class="rm-product-tabs-questions-item-answer">
+            <div class="rm-product-tabs-questions-item-answer-title">{{ text_faq_answer }}</div>
+            <div class="rm-product-tabs-questions-item-answer-text">
+                <p>{{ oct_faq.answer }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+{% endif %}
+
+{% if not is_ajax %}
+    </div>
+    {% if has_more %}
+    <div id="faq-pagination-container" class="text-center mb-4">
+        <button id="load-more-faq"
+                class="rm-btn dark px-4"
+                data-has-more="{{ has_more ? 'true' : 'false' }}"
+                data-next-page="{{ next_page }}">
+            {{ oct_show_more }}
+        </button>
+    </div>
+    {% endif %}
+</div>
+<script>
+$("#faqInputName, #faqInputEmail, #faqText").on("change paste keyup", function() {
+    $(this).removeClass('error_style');
+});
+
+$('#button-oct_faq').on('click', function() {
+    $.ajax({
+        url: 'index.php?route=octemplates/faq/oct_product_faq/write&faqp_id={{ product_id }}',
+        type: 'post',
+        dataType: 'json',
+        data: $("#form-faq").serialize(),
+        beforeSend: function() {
+            $('#button-oct_faq').button('loading');
+            $('#faqModal input, #faqModal textarea').removeClass('error_style');
+            masked('body', true);
+        },
+        complete: function() {
+            $('#button-oct_faq').button('reset');
+        },
+        success: function(json) {
+            $('.alert-dismissible').remove();
+            masked('body', false);
+            if (json['error']) {
+                let errorOption = '';
+                $.each(json['error'], function(i, val) {
+                    $('#faqModal [name="' + i + '"]').addClass('error_style');
+                    errorOption += '<div class="alert-text-item">' + val + '</div>';
+                });
+                rmNotify('danger', errorOption);
+            }
+            if (json['success']) {
+                rmNotify('success', json['success']);
+                $('#faqModal').modal('hide');
+                $('#form-faq input[name="name"]').val('');
+                $('#form-faq textarea[name="text"]').val('');
+            }
+        }
+    });
+});
+
+function loadMoreFaq() {
+    if (window.loadingMoreFaq) return;
+    window.loadingMoreFaq = true;
+    var $paginationContainer = $('#faq-pagination-container');
+    var $loadMoreBtn = $('#load-more-faq');
+    var hasMore = $loadMoreBtn.attr('data-has-more');
+    var nextPage = $loadMoreBtn.attr('data-next-page');
+    if (hasMore === "false" || !nextPage) {
+        $paginationContainer.remove();
+        window.loadingMoreFaq = false;
+        return;
+    }
+    $.ajax({
+        url: 'index.php?route=octemplates/faq/oct_product_faq',
+        type: 'GET',
+        data: {
+            product_id: '{{ product_id }}',
+            page: nextPage
+        },
+        dataType: 'html',
+        beforeSend: function() {
+            $loadMoreBtn.prop('disabled', true);
+            masked('body', true);
+        },
+        complete: function() {
+            masked('body', false);
+            $loadMoreBtn.prop('disabled', false);
+        },
+        success: function(html) {
+            var $temp = $('<div>').html(html);
+            var $newFaqs = $temp.find('.rm-product-tabs-questions-item').clone();
+            $('#{{ oct_faqs_id }}').append($newFaqs);
+            var hasMoreVal = $temp.find('#has_more_hidden_input').val() || '0';
+            if (hasMoreVal === '1') {
+                var nextPageInt = parseInt(nextPage) + 1;
+                $loadMoreBtn.attr('data-next-page', nextPageInt).attr('data-has-more', 'true');
+            } else {
+                $paginationContainer.remove();
+            }
+            window.loadingMoreFaq = false;
+        },
+        error: function() {
+            window.loadingMoreFaq = false;
+        }
+    });
+}
+
+$(document).on('click', '#load-more-faq', function(e) {
+    e.preventDefault();
+    loadMoreFaq();
+});
+</script>
+{% else %}
+<input type="hidden" id="has_more_hidden_input" value="{{ has_more ? 1 : 0 }}">
+{% endif %}

@@ -1,0 +1,71 @@
+{% for cart in carts %}
+<tr id="cart-row-{{ cart.abandoned_cart_id }}">
+    <td class="text-center">{{ cart.cart_item }}</td>
+    <td class="text-left">
+        {{ cart.firstname }} {{ cart.lastname }}
+        {% if cart.customer_id %}
+          <br><a href="{{ cart.customer_link }}" target="_blank">{{ text_view_profile }}</a>
+        {% endif %}
+        <br>{{ cart.email }}
+        <br>{{ cart.phone }}
+    </td>
+    <td class="text-left">
+        <div style="max-height: 230px; overflow-y: auto; border: 1px solid #f0f0f0; background-color: #fff; padding: 10px; border-radius: 12px;">
+        <style>
+            .product-item:last-child {
+                border-bottom: none!important;
+            }
+        </style>
+            {% for product in cart.products %}
+                <div class="product-item" style="display: flex; align-items: center; margin-bottom: 10px; border-bottom: 1px dotted #f0f0f0; padding-bottom: 10px;">
+                    <img src="{{ product.thumb }}" alt="{{ product.name }}" style="width: 40px; height: 40px; margin-right: 10px;" />
+                    <div>
+                        <a href="{{ product.edit_link }}" target="_blank">{{ product.name }}</a>
+                        <br>
+                        <div class="text-muted">
+                            {{ text_quantity }} {{ product.quantity }}
+                            <br>
+                            {% if product.options %}
+                                {% for option in product.options %}
+                                    {{ option.name }} - {{ option.value }}<br>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </td>
+    <td class="text-left">
+        {{ cart.date_modified }}<br>{{ cart.ip_changed }}
+    </td>
+    <td class="text-left">
+        {{ cart.date_added }}<br>{{ cart.ip_added }}
+    </td>
+    <td class="text-left">
+        {{ cart.last_reminder }}
+    </td>
+    <td class="text-left">
+        {{ cart.reminder_count }}
+    </td>
+    <td class="text-center cart-status">
+        {{ cart.status_html|raw }}
+    </td>
+    <td class="text-center">
+        <div class="btn-group-vertical" role="group" aria-label="Cart Actions">
+            <button type="button" class="btn btn-primary{% if cart.can_edit %} btn-copy{% endif %}" data-cart-id="{{ cart.restore_link }}" data-toggle="tooltip" title="{{ button_copy_link }}">
+            <i class="fa fa-copy"></i>
+            </button>
+            <button type="button" class="btn btn-success btn-convert" data-cart-id="{{ cart.abandoned_cart_id }}" data-toggle="tooltip" title="{{ button_convert }}">
+            <i class="fa fa-check"></i>
+            </button>
+            <button type="button" class="btn btn-danger btn-delete" data-cart-id="{{ cart.abandoned_cart_id }}" data-toggle="tooltip" title="{{ button_delete }}">
+            <i class="fa fa-trash"></i>
+            </button>
+            <button type="button" class="btn btn-primary{% if cart.can_edit %} btn-send{% endif %}" data-cart-id="{{ cart.abandoned_cart_id }}" data-toggle="tooltip" title="{{ button_send_email }}">
+            <i class="fa fa-send"></i>
+            </button>
+        </div>
+    </td>
+</tr>
+{% endfor %}

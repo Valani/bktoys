@@ -1,0 +1,604 @@
+{{ header }}
+{{ column_left }}
+<div id="content">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <button type="submit" form="form-abandoned-cart" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+                <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+            </div>
+            <h1>{{ heading_title }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error_warning %}
+			<script>
+				usNotify('danger', '{{ error_warning }}');
+			</script>
+		{% endif %}
+        {% if error_reminder_hours_first or error_reminder_hours_second or error_coupon_discount or error_coupon_lifetime or error_coupon_type or error_cookie_lifetime or error_converted_lifetime %}
+			<script>
+				usNotify('danger', '{{ error_complete_all_fields }}');
+			</script>
+		{% endif %}
+		{% if success %}
+			<script>
+				usNotify('success', '{{ success }}');
+			</script>
+		{% endif %}
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+            </div>
+            <div class="panel-body">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#tab-settings" data-toggle="tab">{{ tab_settings }}</a></li>
+                    <li><a href="#tab-lost-carts" data-toggle="tab">{{ tab_lost_carts }}</a></li>
+                    <li><a href="#tab-email-templates" data-toggle="tab">{{ tab_email_templates }}</a></li>
+                </ul>
+                <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-abandoned-cart" class="tab-content">
+                    <!-- Settings Tab -->
+                    <div class="tab-pane active" id="tab-settings">
+                        <div class="form-horizontal" style="margin-top: 15px;">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="status">{{ entry_status }}</label>
+                                <div class="col-sm-10">
+                                    <div class="toggle-group">
+                                        <input type="checkbox" name="oct_abandoned_cart[status]" {% if oct_abandoned_cart.status is defined and oct_abandoned_cart.status %}checked="checked"{% endif %} id="status" tabindex="1">
+                                        <label for="status"></label>
+                                        <div class="onoffswitch pull-left" aria-hidden="true">
+                                            <div class="onoffswitch-label">
+                                                <div class="onoffswitch-inner"></div>
+                                                <div class="onoffswitch-switch"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span class="help-block">{{ help_status }}</span>
+                                </div>
+                            </div>
+
+                            <div id="general_settings" {% if not oct_abandoned_cart.status %}style="display:none"{% endif %}>
+
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label" for="can_login_by_token">{{ entry_can_login_by_token }}</label>
+                                    <div class="col-sm-10">
+                                        <div class="toggle-group">
+                                            <input type="checkbox" name="oct_abandoned_cart[can_login_by_token]" {% if oct_abandoned_cart.can_login_by_token is defined and oct_abandoned_cart.can_login_by_token %}checked="checked"{% endif %} id="can_login_by_token" tabindex="1">
+                                            <label for="can_login_by_token"></label>
+                                            <div class="onoffswitch pull-left" aria-hidden="true">
+                                                <div class="onoffswitch-label">
+                                                    <div class="onoffswitch-inner"></div>
+                                                    <div class="onoffswitch-switch"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <span class="help-block">{{ help_can_login_by_token }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group{% if error_reminder_hours_first %} has-error{% endif %}">
+                                    <label class="col-sm-2 control-label" for="reminder_hours_first">{{ entry_reminder_hours_first }}</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" name="oct_abandoned_cart[reminder_hours_first]" value="{{ oct_abandoned_cart.reminder_hours_first }}" placeholder="{{ entry_reminder_hours_first }}" id="reminder_hours_first" class="form-control" />
+                                        <span class="help-block">{{ help_reminder_hours_first }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group{% if error_reminder_hours_second %} has-error{% endif %}">
+                                    <label class="col-sm-2 control-label" for="reminder_hours_second">{{ entry_reminder_hours_second }}</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" name="oct_abandoned_cart[reminder_hours_second]" value="{{ oct_abandoned_cart.reminder_hours_second }}" placeholder="{{ entry_reminder_hours_second }}" id="reminder_hours_second" class="form-control" />
+                                        <span class="help-block">{{ help_reminder_hours_second }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group{% if error_converted_lifetime %} has-error{% endif %}">
+                                    <label class="col-sm-2 control-label" for="converted_lifetime">{{ entry_converted_lifetime }}</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" name="oct_abandoned_cart[converted_lifetime]" value="{{ oct_abandoned_cart.converted_lifetime }}" placeholder="{{ entry_converted_lifetime }}" id="converted_lifetime" class="form-control" min="1" />
+                                        <span class="help-block">{{ help_converted_lifetime }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group{% if error_cookie_lifetime %} has-error{% endif %}">
+                                    <label class="col-sm-2 control-label" for="cookie_lifetime">{{ entry_cookie_lifetime }}</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" name="oct_abandoned_cart[cookie_lifetime]" value="{{ oct_abandoned_cart.cookie_lifetime }}" placeholder="{{ entry_cookie_lifetime }}" id="cookie_lifetime" class="form-control" min="1" />
+                                        <span class="help-block">{{ help_cookie_lifetime }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label" for="cron_password">{{ entry_cron_password }}</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" name="oct_abandoned_cart[cron_password]" value="{{ oct_abandoned_cart.cron_password }}" placeholder="{{ entry_cron_password }}" id="cron_password" class="form-control" />
+                                        <span class="help-block">{{ help_cron_password }}</span>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" name="oct_abandoned_cart[api_key]" value="{{ oct_abandoned_cart.api_key }}" placeholder="{{ entry_api_key }}" id="api_key" class="form-control" readonly />
+
+                                {% if cron_url %}
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label" for="input-cron">{{ entry_cron }}</label>
+                                        <div class="col-sm-10">
+                                            <div class="input-group">
+                                                <input type="text" value="/usr/bin/wget -O - -q -t 1 '{{ cron_url }}'" id="input-cron" class="form-control" readonly>
+                                                <span class="input-group-btn">
+                                                    <button id="clipboard-button" class="btn btn-info" type="button" data-toggle="tooltip" title="{{ text_copy }}" onclick="copyToClipboard('input-cron');">
+                                                        <i class="fa fa-files-o" aria-hidden="true"></i>
+                                                    </button>
+                                                </span>
+                                            </div>
+                                            <span class="help-block">{{ help_cron }}</span>
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label" for="coupon_status">{{ entry_coupon_status }}</label>
+                                    <div class="col-sm-10">
+                                        <div class="toggle-group">
+                                            <input type="checkbox" name="oct_abandoned_cart[coupon_status]" {% if oct_abandoned_cart.coupon_status is defined and oct_abandoned_cart.coupon_status %}checked="checked"{% endif %} id="coupon_status" tabindex="1">
+                                            <label for="coupon_status"></label>
+                                            <div class="onoffswitch pull-left" aria-hidden="true">
+                                                <div class="onoffswitch-label">
+                                                    <div class="onoffswitch-inner"></div>
+                                                    <div class="onoffswitch-switch"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <span class="help-block">{{ help_coupon_status }}</span>
+                                    </div>
+                                </div>
+
+                                <div id="coupon_settings" {% if not oct_abandoned_cart.coupon_status %}style="display:none"{% endif %}>
+                                    <div class="form-group{% if error_coupon_discount %} has-error{% endif %}">
+                                        <label class="col-sm-2 control-label" for="coupon_discount">{{ entry_coupon_discount }}</label>
+                                        <div class="col-sm-10">
+                                            <input type="number" name="oct_abandoned_cart[coupon_discount]" value="{{ oct_abandoned_cart.coupon_discount }}" placeholder="{{ entry_coupon_discount }}" id="coupon_discount" class="form-control" min="1" />
+                                            <span class="help-block">{{ help_coupon_discount }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label" for="coupon_type">{{ entry_coupon_type }}</label>
+                                        <div class="col-sm-10">
+                                            <select name="oct_abandoned_cart[coupon_type]" id="coupon_type" class="form-control">
+                                                <option value="percent" {% if oct_abandoned_cart.coupon_type == 'percent' %}selected="selected"{% endif %}>{{ text_percent }}</option>
+                                                <option value="fixed" {% if oct_abandoned_cart.coupon_type == 'fixed' %}selected="selected"{% endif %}>{{ text_fixed }}</option>
+                                            </select>
+                                            <span class="help-block">{{ help_coupon_type }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group{% if error_coupon_lifetime %} has-error{% endif %}">
+                                        <label class="col-sm-2 control-label" for="coupon_lifetime">{{ entry_coupon_lifetime }}</label>
+                                        <div class="col-sm-10">
+                                            <input type="number" name="oct_abandoned_cart[coupon_lifetime]" value="{{ oct_abandoned_cart.coupon_lifetime }}" placeholder="{{ entry_coupon_lifetime }}" id="coupon_lifetime" class="form-control" min="1" />
+                                            <span class="help-block">{{ help_coupon_lifetime }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Lost Carts Tab -->
+                    <div class="tab-pane" id="tab-lost-carts">
+                    <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><i class="fa fa-filter"></i> {{ text_filter }}</h3>
+                            </div>
+                            <div class="panel-body">
+                                <button type="button" id="toggle-filter" class="btn btn-primary"><i class="fa fa-filter"></i> {{ button_toggle_filter }}</button>
+                            </div>
+                            <div id="filter-section" class="panel-body" style="display: none;">
+                                <div class="form-horizontal">
+                                    <div class="form-group">
+                                        <div class="col-sm-6">
+                                            <label>{{ text_filter_firstname }}:</label>
+                                            <input type="text" name="filter_firstname" id="filter_firstname" class="form-control" />
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label>{{ text_filter_lastname }}:</label>
+                                            <input type="text" name="filter_lastname" id="filter_lastname" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-6">
+                                            <label>{{ text_filter_phone }}:</label>
+                                            <input type="text" name="filter_phone" id="filter_phone" class="form-control" />
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label>{{ text_filter_email }}:</label>
+                                            <input type="text" name="filter_email" id="filter_email" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-6">
+                                            <label>{{ text_filter_ip_added }}:</label>
+                                            <input type="text" name="filter_ip_added" id="filter_ip_added" class="form-control" />
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label>{{ text_filter_ip_changed }}:</label>
+                                            <input type="text" name="filter_ip_changed" id="filter_ip_changed" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-6">
+                                            <label>{{ text_filter_date_added_start }}:</label>
+                                            <input type="date" name="filter_date_added_start" id="filter_date_added_start" class="form-control" />
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label>{{ text_filter_date_added_end }}:</label>
+                                            <input type="date" name="filter_date_added_end" id="filter_date_added_end" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-6">
+                                            <label>{{ text_filter_date_modified_start }}:</label>
+                                            <input type="date" name="filter_date_modified_start" id="filter_date_modified_start" class="form-control" />
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label>{{ text_filter_date_modified_end }}:</label>
+                                            <input type="date" name="filter_date_modified_end" id="filter_date_modified_end" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-6">
+                                            <label>{{ text_filter_status }}:</label>
+                                            <select name="filter_status" id="filter_status" class="form-control">
+                                                <option value="">{{ text_status_any }}</option>
+                                                <option value="active">{{ text_active }}</option>
+                                                <option value="converted">{{ text_converted }}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-12 text-left">
+                                            <button type="button" id="button-filter" class="btn btn-primary"><i class="fa fa-search"></i> {{ button_filter }}</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="lost-carts-content" class="table-responsive">
+                            <table class="table table-bordered table-hover mb-3">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">{{ column_cart_id }}</th>
+                                        <th class="text-left">{{ column_customer }}</th>
+                                        <th class="text-left">{{ column_products }}</th>
+                                        <th class="text-left">{{ column_date_modified }}</th>
+                                        <th class="text-left">{{ column_date_added }}</th>
+                                        <th class="text-left">{{ colim_last_reminder }}</th>
+                                        <th class="text-left">{{ column_reminder_count }}</th>
+                                        <th class="text-center">{{ column_status }}</th>
+                                        <th class="text-center">{{ column_action }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lost-cart-data">
+                                    <tr>
+                                        <td colspan="6" class="text-center">{{ text_loading }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div id="pagination-area" class="pull-right"></div>
+                            <div id="results-area" class="pull-left" style="margin: 10px 0;"></div>
+                        </div>
+                    </div>
+                    <!-- Email Templates Tab -->
+                    <div class="tab-pane" id="tab-email-templates">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="oct_abandoned_cart_email_template_status">{{ entry_email_template_status }}</label>
+                                <div class="col-sm-10">
+                                    <div class="toggle-group">
+                                        <input type="checkbox" name="oct_abandoned_cart[email_template_status]" {% if oct_abandoned_cart.email_template_status %}checked="checked"{% endif %} id="oct_abandoned_cart_email_template_status" tabindex="1">
+                                        <label for="oct_abandoned_cart_email_template_status"></label>
+                                        <div class="onoffswitch pull-left" aria-hidden="true">
+                                            <div class="onoffswitch-label">
+                                                <div class="onoffswitch-inner"></div>
+                                                <div class="onoffswitch-switch"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span class="help-block">{{ help_email_template_status }}</span>
+                                </div>
+                            </div>
+                            <div class="form-group" id="etemplates_status" {% if not oct_abandoned_cart.email_template_status %}style="display:none"{% endif %}>
+                                <div class="col-sm-12">
+                                    <ul class="nav nav-tabs" id="language_tabs">
+                                    {% for language in languages %}
+                                        <li {% if loop.first %}class="active"{% endif %}><a href="#language{{ language.language_id }}" data-toggle="tab"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /> {{ language.name }}</a></li>
+                                    {% endfor %}
+                                    </ul>
+                                    <div class="tab-content">
+                                    {% for language in languages %}
+                                        <div class="tab-pane {% if loop.first %}active{% endif %}" id="language{{ language.language_id }}">
+                                        <div class="form-group required">
+                                            <label class="col-sm-2 control-label" for="input-email_template_{{ language.language_id }}">{{ entry_email_subject }}</label>
+                                            <div class="col-sm-10">
+                                            <input type="text" name="oct_abandoned_cart[email_template][{{ language.language_id }}][subject]" value="{{ oct_abandoned_cart.email_template[language.language_id].subject | default('') }}" placeholder="{{ entry_email_subject }}" id="input-email_template_{{ language.language_id }}" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group required">
+                                            <label class="col-sm-2 control-label" for="input-email_template_body_{{ language.language_id }}">{{ entry_email_body }}</label>
+                                            <div class="col-sm-10">
+                                            <textarea name="oct_abandoned_cart[email_template][{{ language.language_id }}][body]" data-toggle="summernote" data-lang="{{ summernote }}" class="form-control" placeholder="{{ entry_email_body }}" id="input-email_template_body_{{ language.language_id }}">{{ oct_abandoned_cart.email_template[language.language_id].body | default('') }}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-sm-2 control-label">{{ text_shortcodes }}</label>
+                                            <div class="col-sm-10">
+                                            <ul>
+                                                <li><strong>[customer_name]</strong> - {{ text_shortcode_customer_name }}</li>
+                                                <li><strong>[restore_link]</strong> - {{ text_shortcode_restore_link }}</li>
+                                                <li><strong>[products]</strong> - {{ text_shortcode_products }}</li>
+                                                <li><strong>[promo_code]</strong> - {{ text_shortcode_coupon_code }}</li>
+                                                <li><strong>[store_name]</strong> - {{ text_shortcode_store }}</li>
+                                            </ul>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div  >
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+
+            document.getElementById('toggle-filter').addEventListener('click', function() {
+                var filterSection = document.getElementById('filter-section');
+                if (filterSection.style.display === 'none') {
+                    filterSection.style.display = 'block';
+                } else {
+                    filterSection.style.display = 'none';
+                }
+            });
+
+            $('#status').change(function() {
+                if ($(this).is(":checked")) {
+                    $("#general_settings").slideDown('slow');
+                } else {
+                    $("#general_settings").slideUp('slow');
+                }
+            });
+
+            $('#coupon_status').change(function() {
+                if ($(this).is(":checked")) {
+                    $("#coupon_settings").slideDown('slow');
+                } else {
+                    $("#coupon_settings").slideUp('slow');
+                }
+            });
+
+            $('a[href="#tab-lost-carts"]').on('shown.bs.tab', function () {
+                loadLostCarts();
+            });
+
+            if ($('a[href="#tab-lost-carts"]').parent().hasClass('active')) {
+                loadLostCarts();
+            }
+
+            $('#oct_abandoned_cart_email_template_status').change(function() {
+                var $input = $(this);
+                if ($input.is(":checked")) {
+                    $("#etemplates_status").slideDown('slow');
+                } else {
+                    $("#etemplates_status").slideUp('slow');
+                }
+            });
+
+            function loadLostCarts(page = 1) {
+                var filterData = {
+                    filter_firstname: $('#filter_firstname').val(),
+                    filter_lastname: $('#filter_lastname').val(),
+                    filter_email: $('#filter_email').val(),
+                    filter_phone: $('#filter_phone').val(),
+                    filter_status: $('#filter_status').val(),
+                    filter_ip_added: $('#filter_ip_added').val(),
+                    filter_ip_changed: $('#filter_ip_changed').val(),
+                    filter_date_added_start: $('#filter_date_added_start').val(),
+                    filter_date_added_end: $('#filter_date_added_end').val(),
+                    filter_date_modified_start: $('#filter_date_modified_start').val(),
+                    filter_date_modified_end: $('#filter_date_modified_end').val(),
+                    page: page
+                };
+
+                $.ajax({
+                    url: '{{ ajax_lost_carts }}',
+                    type: 'GET',
+                    data: filterData,
+                    dataType: 'json',
+                    beforeSend: function() {
+                        $('#lost-cart-data').html('<tr><td colspan="9" class="text-center">{{ text_loading }}</td></tr>');
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            $('#lost-cart-data').html(response.html);
+                            $('#pagination-area').html(response.pagination);
+                            $('#results-area').html(response.results);
+                        } else {
+                            $('#lost-cart-data').html('<tr><td colspan="9" class="text-center"><b>{{ text_error_loading_carts }}</b></td></tr>');
+                            $('#results-area').html('');
+                        }
+                    },
+                    error: function() {
+                        $('#lost-cart-data').html('<tr><td colspan="9" class="text-center"><b>{{ text_error_loading_carts }}</b></td></tr>');
+                        $('#results-area').html('');
+                    }
+                });
+            }
+
+            $(document).on('click', '#button-filter', function() {
+                loadLostCarts(1);
+            });
+
+
+            $(document).on('click', '.pagination a', function(e) {
+                e.preventDefault();
+                var page = $(this).attr('href').split('page=')[1];
+                loadLostCarts(page);
+            });
+
+            $(document).on('click', '.btn-copy', function () {
+                var cartId = $(this).data('cart-id');
+                
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(cartId)
+                        .then(function() {
+                            usNotify('success', '{{ text_link_copied }}');
+                        })
+                        .catch(function(error) {
+                            usNotify('danger', error);
+                        });
+                } else {
+                    var $tempInput = $("<input>");
+                    $("body").append($tempInput);
+                    $tempInput.val(cartId).select();
+                    
+                    try {
+                        var successful = document.execCommand('copy');
+                        if (successful) {
+                            usNotify('success', '{{ text_link_copied }}');
+                        } else {
+                            usNotify('danger', '{{ text_error }}');
+                        }
+                    } catch(err) {
+                        usNotify('danger', err);
+                    }
+                    $tempInput.remove();
+                }
+            });
+
+            var urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('filter_status')) {
+                $('a[href="#tab-lost-carts"]').tab('show');
+            }
+
+            $(document).on('click', '.btn-convert', function () {
+                var cartId = $(this).data('cart-id');
+                if (confirm('{{ text_confirm_convert }}')) {
+                    $.ajax({
+                        url: '{{ ajax_convert_cart }}',
+                        type: 'POST',
+                        data: { cart_id: cartId },
+                        dataType: 'json',
+                        beforeSend: function() {
+                            $('#cart-row-' + cartId + ' .btn-convert').prop('disabled', true);
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                $('#cart-row-' + cartId + ' .cart-status').html('<span class="label label-success">{{ text_converted }}</span>');
+                                usNotify('success', '{{ text_convert_success }}');
+                            } else {
+                                usNotify('danger', response.error || '{{ text_error }}');
+                            }
+                        },
+                        error: function () {
+                            usNotify('danger', '{{ text_error }}');
+                        },
+                        complete: function() {
+                            $('#cart-row-' + cartId + ' .btn-convert').prop('disabled', false);
+                        }
+                    });
+                }
+            });
+
+            $(document).on('click', '.btn-delete', function () {
+                var cartId = $(this).data('cart-id');
+                if (confirm('{{ text_confirm_delete }}')) {
+                    $.ajax({
+                        url: '{{ ajax_delete_cart }}',
+                        type: 'POST',
+                        data: { cart_id: cartId },
+                        dataType: 'json',
+                        beforeSend: function() {
+                            $('#cart-row-' + cartId + ' .btn-delete').prop('disabled', true);
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                $('#cart-row-' + cartId).remove();
+                                usNotify('success', '{{ text_delete_success }}');
+                            } else {
+                                usNotify('danger', response.error || '{{ text_error }}');
+                            }
+                        },
+                        error: function () {
+                            usNotify('danger', '{{ text_error }}');
+                        },
+                        complete: function() {
+                            $('#cart-row-' + cartId + ' .btn-delete').prop('disabled', false);
+                        }
+                    });
+                }
+            });
+
+            $(document).on('click', '.btn-send', function () {
+                var cartId = $(this).data('cart-id');
+
+                $.ajax({
+                    url: '{{ ajax_send_email }}',
+                    type: 'POST',
+                    data: { cart_id: cartId, api_key: '{{ oct_abandoned_cart.api_key }}' },
+                    dataType: 'json',
+            
+                    beforeSend: function() {
+                        $('#cart-row-' + cartId + ' .btn-send').prop('disabled', true);
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            usNotify('success', response.message || '{{ text_email_sent_success }}');
+                            
+                            var row = document.getElementById('cart-row-' + response.abandoned_cart_id);
+                            if (row) {
+                                row.cells[5].innerText = response.last_reminder;
+                                row.cells[6].innerText = response.reminder_count;
+                            }
+                        } else {
+                            usNotify('danger', response.message || '{{ text_error }}');
+                        }
+                    },
+                    error: function () {
+                        usNotify('danger', '{{ text_error }}');
+                    },
+                    complete: function() {
+                        $('#cart-row-' + cartId + ' .btn-send').prop('disabled', false);
+                    }
+                });
+            });
+        });
+
+        function copyToClipboard(inputId) {
+            var copyText = document.getElementById(inputId);
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); // For mobile devices
+
+            try {
+                var successful = document.execCommand('copy');
+                if (successful) {
+                    usNotify('success', '{{ text_copy_success }}');
+                } else {
+                    usNotify('danger', '{{ text_copy_failed }}');
+                }
+            } catch (err) {
+                usNotify('danger', '{{ text_copy_failed }}');
+            }
+        }
+    </script>
+</div>
+{{ footer }}

@@ -1,0 +1,30 @@
+# Config and Htaccess Files
+/.htaccess
+/admin/.htaccess
+/admin/.htpasswd
+/config.php
+/admin/config.php
+/php.ini
+
+# Image Cache Files
+/image/*
+
+# Backup Files
+/system/storage/*
+/work/*
+/min/*
+/JCB-PERKINS.csv
+/new_jcb_perkins.csv
+/sitemap.xml
+/vbn.php
+/adminer.php
+/browserconfig.xml
+# IDE Project files
+/upload/.idea/*
+/.idea/*
+/.DS_Store
+/.cache
+/.php-cs-fixer.cache
+/system/library/phpqrcode
+/system/library/tcpdf
+/catalog/view/theme/oct_showcase/stylesheet/dynamic_stylesheet_0.css.claude/

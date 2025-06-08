@@ -1,0 +1,130 @@
+{% if not ajax %}
+<div id="review-list">
+{% endif %}
+
+{% if reviews %}
+    {% for review in reviews %}
+    <div class="rm-store-reviews-item">
+        <div class="row align-items-start">
+            <div class="col-md-3 rm-store-reviews-item-info text-center py-md-4">
+                <img src="catalog/view/theme/oct_remarket/img/sprite.svg#include--user-icon" alt="{{ review.author }}" width="50" height="50">
+                <div class="rm-store-reviews-item-info-name">{{ review.author }}</div>
+                <div class="rm-store-reviews-item-info-date">{{ review.date_added }}</div>
+                <div class="rm-store-reviews-item-info-rating">
+                    <span class="rm-store-reviews-item-info-rating-title">{{ text_oct_review }}</span>
+                    <div class="rm-module-rating-stars d-flex align-items-center justify-content-center">
+                    {% for i in 1..5 %}
+                        {% if review.rating < i %}
+                            <span class="rm-module-rating-star"></span>
+                        {% else %}
+                            <span class="rm-module-rating-star rm-module-rating-star-is"></span>
+                        {% endif %}
+                    {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9 py-lg-4">
+                <div class="rm-store-reviews-item-text">
+                    <div>{{ review.text }}</div>
+                    {% if review.reply %}
+                    <div class="rm-store-reviews-item-text-admin mt-4">
+                        <div class="rm-store-reviews-item-text-admin-title">{{ oct_product_answer_admin }}</div>
+                        <p>{{ review.reply }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+<div class="p-md-4">
+    <div class="my-3 my-md-0 mb-md-3 text-center text-sm-left"><b>{{ oct_text_no_reviews }}</b></div>
+    <img src="catalog/view/theme/oct_remarket/img/reviews-empty.svg" alt="" class="img-fluid d-md-none my-4">
+</div>
+{% endif %}
+
+{% if not ajax %}
+</div>
+
+{% if has_more %}
+<div id="review-more-container" class="review-more-container text-center mt-3 mt-md-0 mb-md-4">
+    <button type="button"
+            class="rm-btn dark px-5"
+            id="button-show-more-reviews"
+            data-next-page="{{ next_page }}"
+            data-has-more="{{ has_more ? 'true' : 'false' }}"
+            data-product-id="{{ product_id }}">
+        {{ oct_show_more }}
+    </button>
+</div>
+{% endif %}
+
+<script>
+(function() {
+    var loadingMoreReviews = false;
+
+    function loadMoreReviews() {
+        if (loadingMoreReviews) return;
+        loadingMoreReviews = true;
+
+        var btn = document.getElementById('button-show-more-reviews');
+        if (!btn) return;
+
+        var nextPage  = btn.getAttribute('data-next-page');
+        var hasMore   = btn.getAttribute('data-has-more');
+        var productId = btn.getAttribute('data-product-id');
+
+        if (hasMore === 'false' || !nextPage) {
+            var container = document.getElementById('review-more-container');
+            if (container) container.remove();
+            loadingMoreReviews = false;
+            return;
+        }
+
+        $.ajax({
+            url: 'index.php?route=octemplates/events/helper/octProductReviews',
+            data: {
+                product_id: productId,
+                page: nextPage
+            },
+            dataType: 'html',
+            beforeSend: function() {
+                $(btn).prop('disabled', true);
+                masked('body', true);
+            },
+            success: function(html) {
+                var $temp = $('<div>').html(html);
+                var $newReviews = $temp.find('.rm-store-reviews-item').clone();
+                if ($newReviews.length) {
+                    $('#review-list').append($newReviews);
+                }
+
+                var $hasMore = $temp.find('#has_more_input');
+                if ($hasMore.length && $hasMore.val() === '1') {
+                    var nextPageNum = parseInt(nextPage) + 1;
+                    $(btn).attr('data-next-page', nextPageNum).attr('data-has-more','true');
+                } else {
+                    $('#review-more-container').remove();
+                }
+            },
+            complete: function() {
+                $(btn).prop('disabled', false);
+                masked('body', false);
+                loadingMoreReviews = false;
+            },
+            error: function() {
+                loadingMoreReviews = false;
+            }
+        });
+    }
+
+    $(document).on('click', '#button-show-more-reviews', function(e) {
+        e.preventDefault();
+        loadMoreReviews();
+    });
+})();
+</script>
+{% else %}
+<input type="hidden" id="has_more_input" value="{{ has_more ? 1 : 0 }}">
+{% endif %}

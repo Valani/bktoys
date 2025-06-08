@@ -1,0 +1,40 @@
+<div class="content-block fsz-14 shipping-method oct-checkout-block h-100">
+    <div class="content-block-title dark-text with-border-bottom pb-3 mb-3 fsz-16 fw-500">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path
+                d="M19.9457 10.06C19.9457 10.0549 19.9487 10.0508 19.9487 10.0457C19.9487 10.0313 19.9416 10.02 19.9405 10.0057C19.9293 9.93593 19.9139 9.86621 19.8985 9.79647C19.8913 9.77596 19.8893 9.75442 19.8811 9.73494C19.839 9.55648 19.7959 9.37799 19.7282 9.20261L18.6637 6.57303C18.1929 5.38027 17.7058 4.14752 15.0967 4.14752H12.8199V2.35274C12.8199 1.07999 11.784 0.045166 10.5123 0.045166H2.30758C1.03585 0.045166 0 1.07999 0 2.35274V13.6342C0 14.829 0.915805 15.8023 2.07985 15.9192C2.07062 16.0125 2.05118 16.1028 2.05118 16.1982C2.05118 17.753 3.31573 19.0186 4.87155 19.0186C6.42737 19.0186 7.69192 17.753 7.69192 16.1982C7.69192 16.11 7.67344 16.0269 7.66626 15.9418H12.3337C12.3255 16.0269 12.3081 16.11 12.3081 16.1982C12.3081 17.753 13.5726 19.0186 15.1284 19.0186C16.6843 19.0186 17.9488 17.753 17.9488 16.1982C17.9488 16.1028 17.9304 16.0115 17.9202 15.9192C19.0842 15.8023 20 14.829 20 13.6342V10.6395C20 10.4456 19.9744 10.2528 19.9457 10.06ZM15.0977 5.68691C16.6596 5.68691 16.8053 6.05307 17.2361 7.14429L18.0986 9.27647H12.8209V5.68691H15.0977ZM4.87255 17.4812C4.16592 17.4812 3.59057 16.9058 3.59057 16.1992C3.59057 15.4926 4.16592 14.9172 4.87255 14.9172C5.57918 14.9172 6.15454 15.4926 6.15454 16.1992C6.15454 16.9058 5.57918 17.4812 4.87255 17.4812ZM15.1284 17.4812C14.4218 17.4812 13.8465 16.9058 13.8465 16.1992C13.8465 15.4926 14.4218 14.9172 15.1284 14.9172C15.8351 14.9172 16.4104 15.4926 16.4104 16.1992C16.4104 16.9058 15.8351 17.4812 15.1284 17.4812ZM17.6924 14.4044H17.2863C16.7684 13.7829 15.9992 13.3788 15.1284 13.3788C14.2577 13.3788 13.4885 13.7829 12.9706 14.4044H7.0294C6.51147 13.7829 5.74228 13.3788 4.87155 13.3788C4.00083 13.3788 3.23163 13.7829 2.71371 14.4044H2.30758C1.88401 14.4044 1.53838 14.0598 1.53838 13.6352V10.8149H7.94832C8.37291 10.8149 8.71751 10.4703 8.71751 10.0457C8.71751 9.62107 8.37291 9.27647 7.94832 9.27647H1.53838V2.35374C1.53838 1.92915 1.88401 1.58455 2.30758 1.58455H10.5123C10.9359 1.58455 11.2815 1.92915 11.2815 2.35374V10.8149H18.4606V13.6352C18.4616 14.0598 18.116 14.4044 17.6924 14.4044Z"
+                fill="#00171F" />
+        </svg>
+        {{ heading_shipping_block }}
+    </div>
+    {% if error_warning %}
+        <div class="alert alert-warning fsz-14">
+            <i class="fa fa-exclamation-circle"></i>
+            {{ error_warning }}
+        </div>
+    {% endif %}
+    {% if shipping_methods %}
+        <p class="secondary-text mb-3">{{ text_shipping_method }}</p>
+        {% set first_checked = false %}
+        {% for shipping_method in shipping_methods %}
+            <div class="form-check-item p-3 mt-2 br-4">
+                <p class="fw-700 dark-text mb-2">{{ shipping_method.title }}</p>
+                {% if not shipping_method.error %}
+                    {% for quote in shipping_method['quote'] %}
+                        <div class="form-check">
+                            <label class="form-check-label d-flex align-items-center">
+                                <input type="radio" class="form-check-input" name="shipping_method" value="{{ quote.code }}" title="{{ quote.title }}" {% if quote.code == shipping_code %}checked="checked"{% endif %}/>
+                                {% if quote.image %}
+                                    <img src="{{ quote.image }}" alt="{{ quote.title }}" class="mr-2" width="20" height="20" />
+                                {% endif %}
+                                {{ quote.title }}{% if cost_in_shipping_block %} - {{ quote.text }}{% endif %}
+                            </label>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="alert alert-danger fsz-14">{{ shipping_method.error }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>

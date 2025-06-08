@@ -1,0 +1,122 @@
+<div class="modal fade" id="octStockNotifier" tabindex="-1"  aria-labelledby="octStockNotifierLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered wide">
+	    <div class="modal-content">
+	        <div class="modal-header">
+				<div class="modal-title" id="octStockNotifierLabel">{{ heading_title }}</div>
+	            <button type="button" class="modal-close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true" class="modal-close-icon modal-close-left"></span>
+					<span aria-hidden="true" class="modal-close-icon modal-close-right"></span>
+				</button>
+	        </div>
+	        <div id="notifier-main-block" class="modal-body d-flex flex-column flex-md-row">
+				<div class="modal-body-left text-center">
+					<div class="pb-4">{{ enter_text }}</div>
+					{% if thumb is defined %}
+						<img src="{{ thumb }}" class="d-none d-md-block modal-body-img mx-auto" alt="{{ heading_title_product }}">
+					{% endif %}
+					<div class="modal-product-title">{{ heading_title_product }}</div>
+					{% if price %}
+						<div class="rm-product-center-price">
+							{% if not special %}
+								<span>{{ price }}</span>
+							{% else %}
+								<span>{{ special }}</span>
+							{% endif %}
+						</div>
+					{% endif %}
+				</div>
+				<div class="modal-body-right">
+					<form method="post" enctype="multipart/form-data" id="stock-notifier-form">
+						{% if oct_stock_notifier_data.name %}
+						<div class="form-group">
+							<label for="inputNotifierName" class="fsz-14 dark-text fw-500 pb-1">{% if oct_stock_notifier_data.name == 2 %}<span class="required">* </span>{% endif %}{{ enter_name }}</label>
+							<input type="text" name="name" value="{{ name }}" class="form-control" id="inputNotifierName" placeholder="{{ enter_name }}" inputmode="text">
+						</div>
+						{% endif %}
+						{% if oct_stock_notifier_data.phone %}
+						<div class="form-group">
+							<label for="inputNotifierPhone" class="fsz-14 dark-text fw-500 pb-1">{% if oct_stock_notifier_data.phone == 2 %}<span class="required">* </span>{% endif %}{{ enter_phone }}</label>
+							<input type="tel" name="phone" value="{{ phone }}" class="form-control" id="inputNotifierPhone" placeholder="{{ enter_phone }}" inputmode="tel">
+						</div>
+						{% endif %}
+						<div class="form-group">
+							<label for="inputNotifierEmail" class="fsz-14 dark-text fw-500 pb-1"><span class="required">* </span>{{ enter_email }}</label>
+							<input type="email" name="email" value="{{ email }}" class="form-control" id="inputNotifierEmail" placeholder="{{ enter_email }}" inputmode="email">
+						</div>
+						{% if text_terms %}
+						<div class="form-checkbox-group">
+							<div class="checkbox">
+								<label>
+									<input id="agreeNotifierCheck" type="checkbox" class="rm-form-checkbox-input" name="agree">
+									<span class="check-box"></span>
+									{{ text_terms }}
+								</label>
+							</div>
+						</div>
+						{% endif %}
+						<button type="submit" class="rm-btn dark">{{ button_send }}</button>
+						<input type="hidden" name="pid" value="{{ product_id }}">
+					</form>
+				</div>
+				
+				
+				<div class="rm-popup-success d-none flex-column align-items-center text-center w-100">
+					<img src="catalog/view/theme/oct_remarket/img/sprite.svg#include--popup-success-icon" alt="" width="70" height="70">
+                    <div id="rm-popup-success-notifier-text"></div>
+                    <button type="button" class="rm-btn dark" data-dismiss="modal" aria-label="Close"><span class="rm-btn-text">{{ oct_info_bar_close }}</span></button>
+                </div>
+		    </div>
+	    </div>
+	</div>
+<script>
+$("#inputNotifierName, #inputNotifierPhone, #inputNotifierEmail, #agreeNotifierCheck").on("change paste keyup", function() {
+	$(this).removeClass('error_style');
+});
+
+$('#stock-notifier-form').on('submit', function (event) {
+	event.preventDefault();
+	$.ajax({
+		type: 'post',
+		url: 'index.php?route=octemplates/module/oct_stock_notifier/add',
+		dataType: 'json',
+		data: $('#stock-notifier-form').serialize(),
+		cache: false,
+		beforeSend: function() {
+			masked('body', true);
+		},
+		complete: function() {
+			masked('body', false);
+		},
+		success: function (json) {
+			if (json['error']) {
+				$('#octStockNotifier .text-danger').remove();
+				let errorOption = '';
+
+				$.each(json['error'], function (i, val) {
+					$('#octStockNotifier [name="' + i + '"]').addClass('error_style');
+					errorOption += '<div class="alert-text-item">' + val + '</div>';
+				});
+
+				rmNotify('danger', errorOption);
+			} else {
+				if (json['output']) {
+					$("#rm-popup-success-notifier-text").html(json['output']);
+					$("#notifier-main-block").html($(".rm-popup-success"));
+					$(".rm-popup-success").removeClass("d-none");
+					$(".modal-dialog").removeClass("wide");
+				}
+			}
+		}
+	});
+});
+</script>
+{% if oct_stock_notifier_data.mask is defined and oct_stock_notifier_data.mask is not empty %}
+<script src="catalog/view/theme/oct_remarket/js/jquery.inputmask.bundle.min.js"></script>
+<script>
+$('#inputNotifierPhone').inputmask({
+	mask: '{{ oct_stock_notifier_data.mask }}',
+	clearMaskOnLostFocus: false
+});
+</script>
+{% endif %}
+</div>

@@ -1,0 +1,51 @@
+<div class="row mt-1 gx-3 gx-md-4 gy-3 payment_fields_block">
+    {% for key, field in fields %}
+        <div class="form-group col-lg-12">
+            <label class="dark-text fsz-14 fw-500 mb-1 mt-2" for="{{ key }}">
+                {% if field.required %}<span class="required">*</span>{% endif %}
+                {% if field.localization[language_id].name is not empty %}
+                    {{ field.localization[language_id].name }}
+                {% elseif attribute(_context, 'entry_' ~ key) is not empty %}
+                    {{ attribute(_context, 'entry_' ~ key) }}
+                {% else %}
+                    {{ field.name }}
+                {% endif %}
+            </label>
+            {% if field.custom_field %}
+                {% if field.type == 'text' %}
+                    <input type="text" placeholder="{% if field.localization[language_id].placeholder is not empty %}{{ field.localization[language_id].placeholder }}{% endif %}" class="form-control" id="custom_{{ field.custom_field_id }}" name="custom_{{ field.custom_field_id }}" value="{{ field.value }}">
+                {% elseif field.type == 'textarea' %}
+                    <textarea class="form-control" placeholder="{% if field.localization[language_id].placeholder is not empty %}{{ field.localization[language_id].placeholder }}{% endif %}" id="custom_{{ field.custom_field_id }}" name="custom_{{ field.custom_field_id }}">{{ field.value }}</textarea>
+                {% elseif field.type == 'date' %}
+                    <input type="date" class="form-control" id="custom_{{ field.custom_field_id }}" name="custom_{{ field.custom_field_id }}" value="{{ field.value }}">
+                {% elseif field.type == 'datetime' %}
+                    <input type="datetime-local" class="form-control" id="custom_{{ field.custom_field_id }}" name="custom_{{ field.custom_field_id }}" value="{{ field.value }}">
+                {% elseif field.type == 'time' %}
+                    <input type="time" class="form-control" id="custom_{{ field.custom_field_id }}" name="custom_{{ field.custom_field_id }}" value="{{ field.value }}">
+                {% elseif field.type == 'select' %}
+                    <select class="form-control rm-select" id="custom_{{ field.custom_field_id }}" name="custom_{{ field.custom_field_id }}">
+                        {% for option in field.options %}
+                            <option value="{{ option.custom_field_value_id }}" {% if option.custom_field_value_id == field.value %}selected{% endif %}>{{ option.name }}</option>
+                        {% endfor %}
+                    </select>
+                {% elseif field.type == 'radio' %}
+                    {% for option in field.options %}
+                        <div class="form-check d-flex align-items-center">
+                                <input class="form-check-input" type="radio" name="custom_{{ field.custom_field_id }}" id="custom_{{ field.custom_field_id }}_{{ option.custom_field_value_id }}" value="{{ option.custom_field_value_id }}" {% if option.custom_field_value_id == field.value %}checked{% endif %}>
+                            <label for="custom_{{ field.custom_field_id }}_{{ option.custom_field_value_id }}" class="form-check-label">{{ option.name }}</label>
+                        </div>
+                    {% endfor %}
+                {% elseif field.type == 'checkbox' %}
+                    {% for option in field.options %}
+                        <div class="form-check d-flex align-items-center">
+                            <input class="form-check-input" type="checkbox" id="custom_{{ field.custom_field_id }}_{{ option.custom_field_value_id }}" name="custom_{{ field.custom_field_id }}[]" value="{{ option.custom_field_value_id }}" {% if option.custom_field_value_id in field.value %}checked{% endif %}> 
+                            <label for="custom_{{ field.custom_field_id }}_{{ option.custom_field_value_id }}" class="form-check-label">{{ option.name }}</label>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% else %}
+                <input type="{{ field.type }}" placeholder="{% if field.localization[language_id].placeholder is not empty %}{{ field.localization[language_id].placeholder }}{% elseif attribute(_context, 'entry_' ~ key) is not empty %}{{ attribute(_context, 'entry_' ~ key) }} {% endif %}" class="form-control" id="{{ key }}" name="{{ key }}" value="{{ field.value }}">
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>

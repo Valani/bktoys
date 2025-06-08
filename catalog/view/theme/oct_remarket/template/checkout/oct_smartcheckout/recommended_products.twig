@@ -1,0 +1,42 @@
+{% if recommended_poducts %}
+<div class="content-block-title dark-text with-border-bottom pb-3 mb-3 fsz-16 d-flex align-items-center justify-content-between fw-500">{% if not title %}{{ text_recommended_products }}{% else %}{{ title }}{% endif %}</div>
+{% if description %}
+    <div class="ds-cart-column-description fw-300 fsz-14 light-text mb-3">{{ description }}</div>
+{% endif %}
+<div class="ds-cart-recommended-products rm-module d-flex gap-2 gap-md-3">
+    {% for product in recommended_poducts %}
+        <div class="ds-cart-recommended-products-item">
+            <div class="content-block h-100 d-flex gap-2 gap-md-3 p-2 p-md-3">
+                <div class="ds-cart-recommended-products-item-img ds-module-img mr-2 mr-md-3">
+                    <a href="{{ product.href }}">
+                        <img class="d-block mx-auto" src="{{ product.thumb }}" alt="{{ product.name }}" title="{{ product.name }}" width="{{ product.width }}" height="{{ product.height }}"/>
+                    </a>
+                </div>
+                <div class="ds-module-caption d-flex flex-column align-items-start h-100 pt-0 w-100">
+                    <a href="{{ product.href }}" class="rm-module-title dark-text lh-sm">{{ product.name }}</a>
+                    <div class="d-flex gap-3 justify-content-between align-items-end mt-auto w-100">
+                        <div class="rm-module-price mb-2">
+                        {% if product.special %}
+                            <div class="rm-module-price-old light-text text-decoration-line-through mb-1">
+                                {{ product.price }}
+                            </div>
+                            <div class="rm-module-price">
+                                {{ product.special }}
+                            </div>
+                        {% else %}
+                            <div class="rm-module-price">
+                                {{ product.price }}
+                            </div>
+                        {% endif %}
+                        </div>
+                        <button type="button" onclick="addToCartFromCheckout({{ product.product_id }});" aria-label="To cart" class="rm-btn secondary rm-cart-btn">
+                            <span class="rm-cart-btn-icon"></span>
+                        </button>
+                        <input type="hidden" name="product_id" value="{{ product.product_id }}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}

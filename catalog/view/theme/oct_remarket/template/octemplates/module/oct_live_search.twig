@@ -1,0 +1,99 @@
+<div class="rm-livesearch-list">
+	{% if query_corrected %}
+		<p class="mb-2 dark-text fw-400 fsz-14">{{ text_corrected_search }}</p>
+	{% endif %}
+
+	{% if manufacturers is not empty %}
+		<p class="rm-livesearch-list-title fsz-16 fw-500 dark-text">{{ founded_manufacturers }}</p>
+		<div class="rm-livesearch-items-box d-flex mb-3">
+			{% for category in manufacturers %}
+				<div class="rm-livesearch-categories-item">
+					<a class="content-block d-flex flex-column align-items-center justify-content-center p-2 h-100" href="{{ category.href }}">
+						{% if manufacturer_image %}
+							<img src="{{ category.image }}" alt="{{ category.name }}" width="60" height="60" />
+							<span class="rm-subcategories-title dark-text fw-500 fsz-12 text-center lh-sm mt-2">{{ category.name }}</span>
+						{% else %}
+							<span class="rm-subcategories-title dark-text fw-500 fsz-12 text-center lh-sm">{{ category.name }}</span>
+						{% endif %}
+					</a>
+				</div>
+			{% endfor %}
+		</div>
+	{% endif %}
+
+	{% if direct_categories is not empty %}
+		<p class="rm-livesearch-list-title fsz-16 fw-500 dark-text">{{ founded_categories }}</p>
+		<div class="rm-livesearch-items-box d-flex mb-3">
+			{% for category in direct_categories %}
+				<div class="rm-livesearch-categories-item">
+					<a class="content-block d-flex flex-column align-items-center justify-content-center p-2 h-100" href="{{ category.href }}">
+						{% if category_image %}
+							<img src="{{ category.image }}" alt="{{ category.name }}" width="60" height="60" />
+							<span class="rm-subcategories-title dark-text fw-500 fsz-12 text-center lh-sm mt-2">{{ category.name }}</span>
+						{% else %}
+							<span class="rm-subcategories-title dark-text fw-500 fsz-12 text-center lh-sm">{{ category.name }}</span>
+						{% endif %}
+					</a>
+				</div>
+			{% endfor %}
+		</div>
+	{% endif %}
+
+	{% if product_categories is not empty %}
+		<p class="rm-livesearch-list-title fsz-16 fw-500 dark-text">{{ founded_in_categories }}</p>
+		<div class="rm-livesearch-items-box d-flex mb-3">
+			{% for category in product_categories %}
+				<div class="rm-livesearch-categories-item">
+					<a class="content-block d-flex flex-column align-items-center justify-content-center p-2 h-100" href="{{ category.href }}">
+						{% if category_image %}
+							<img src="{{ category.image }}" alt="{{ category.name }}" width="60" height="60" />
+							<span class="rm-subcategories-title dark-text fw-500 fsz-12 text-center lh-sm mt-2">{{ category.name }}</span>
+						{% else %}
+							<span class="rm-subcategories-title dark-text fw-500 fsz-12 text-center lh-sm">{{ category.name }}</span>
+						{% endif %}
+					</a>
+				</div>
+			{% endfor %}
+		</div>
+	{% endif %}
+
+	{% if products is not empty %}
+		<p class="rm-livesearch-list-title fsz-16 fw-500 dark-text">{{ founded_products }}</p>
+		{% for product in products%}
+		    <div class="rm-livesearch-list-item d-flex align-items-center mb-2 pb-2">
+		        <div class="rm-livesearch-list-item-image mr-4">
+		            <a href="{{ product.href }}"><img src="{{ product.image }}" alt="{{ product.name }}" /></a>
+		        </div>
+		        <div class="rm-livesearch-list-item-info">
+			        <div class="rm-livesearch-list-item-name">
+			            <a href="{{ product.href }}">{{ product.name }}</a>
+			        </div>
+			        {% if price_setting %}
+			        <div class="rm-livesearch-list-item-price d-flex align-items-center">
+			            {% if product.special %}
+			            <span class="rm-price">{{ product.special }}</span>
+			            <span class="rm-price-old">{{ product.price }}</span>
+			            {% else %}
+			            <span class="rm-price">{{ product.price }}</span>
+			            {% endif %}
+			        </div>
+			        {% endif %}
+			        {% if model_setting and product.model %}
+			        <div class="rm-livesearch-list-item-model-sku">{{ oct_live_search_model }}<span class="rm-product-info-code">{{ product.model }}</span></div>
+			        {% endif %}
+			        {% if sku_setting and product.sku %}
+			         <div class="rm-livesearch-list-item-model-sku">{{ oct_live_search_sku }}<span class="rm-product-info-code">{{ product.sku }}</span></div>
+			        {% endif %}
+			        <div class="rm-livesearch-list-item-stock">
+			            <span class="{% if product.quantity <= 0 %}out-of-stock{% else %}in-stock{% endif %}">{{ product.stock }}</span>
+			        </div>
+		        </div>
+		    </div>
+		{% endfor %}
+	{% endif %}
+	{% if direct_categories is empty and product_categories is empty and manufacturers is empty and products is empty %}
+		<div class="dark-text fw-500 fsz-14">
+			{{ oct_live_search_result_empty }}
+		</div>
+	{% endif %}
+</div>

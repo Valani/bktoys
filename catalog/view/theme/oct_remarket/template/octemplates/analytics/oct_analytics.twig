@@ -1,0 +1,17 @@
+{% if ((oct_analytics_google_status is defined and oct_analytics_google_status) and oct_analytics_google_code is not empty) %}
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ oct_analytics_google_code }}"></script>
+<script id="octAnalytics">
+	window.dataLayer = window.dataLayer || [];
+
+	function gtag(){dataLayer.push(arguments);}
+
+	gtag('js', new Date());
+
+	gtag('config', '{{ oct_analytics_google_code }}');
+
+	{% if ((oct_analytics_google_status is defined and oct_analytics_google_status) and oct_analytics_googleads_code is not empty) %}
+	gtag('config', '{{ oct_analytics_googleads_code }}');
+	{% endif %}
+</script>
+{% endif %}

@@ -1,0 +1,64 @@
+{% if fields %}
+    <div class="content-block-title dark-text with-border-bottom pb-3 mb-3 fw-500 fsz-16 d-flex align-items-center">
+            <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10.9374 10.2883C10.5908 10.0432 10.5078 9.56317 10.7519 9.21649C10.997 8.86981 11.474 8.7857 11.8248 9.03084L12.0719 9.2052L11.6832 7.00308C11.6093 6.5846 11.8883 6.18561 12.3068 6.11176C12.7263 6.03791 13.1242 6.31792 13.197 6.73537L13.5889 8.95597L13.7817 8.68211C14.0269 8.33441 14.5049 8.25133 14.8546 8.49646C15.2013 8.7416 15.2843 9.22162 15.0402 9.5683L13.7817 11.352C13.7787 11.3561 13.7735 11.3581 13.7705 11.3622C13.7069 11.4484 13.6237 11.5171 13.5283 11.5715C13.4924 11.592 13.4556 11.6002 13.4176 11.6145C13.3735 11.632 13.3345 11.6576 13.2863 11.6668C13.2412 11.6751 13.196 11.6792 13.1519 11.6792C13.1489 11.6792 13.1458 11.6771 13.1417 11.6771C13.0617 11.6761 12.9827 11.6617 12.9058 11.635C12.874 11.6248 12.8473 11.6063 12.8175 11.592C12.7816 11.5745 12.7437 11.5622 12.7098 11.5386L10.9374 10.2883ZM6.75271 8.03286C6.52706 6.75589 6.683 5.75687 7.22661 4.9794C7.77124 4.20091 8.65845 3.71372 9.93542 3.48807L13.6628 2.8306C14.9398 2.60495 15.9366 2.76086 16.7162 3.30447C17.4947 3.84911 17.9808 4.73529 18.2065 6.01227L18.8639 9.7396C19.0896 11.0166 18.9337 12.0156 18.389 12.7941C17.8454 13.5715 16.9592 14.0598 15.6812 14.2844L11.954 14.9418C11.5888 15.0065 11.2421 15.0393 10.9159 15.0393C8.9948 15.0393 7.79069 13.9213 7.41016 11.7602L6.75271 8.03286ZM8.26769 7.76617L8.92514 11.4935C9.22361 13.1818 9.99595 13.7244 11.6873 13.4279L15.4147 12.7705C16.269 12.6197 16.83 12.3387 17.1285 11.912C17.4269 11.4853 17.4988 10.8627 17.3491 10.0083L16.6916 6.28099C16.5408 5.4266 16.2598 4.86556 15.8331 4.56709C15.551 4.36913 15.1818 4.27066 14.7161 4.27066C14.4802 4.27066 14.2176 4.29527 13.9283 4.34655L10.2011 5.00402C9.34672 5.1548 8.78565 5.43584 8.48717 5.86252C8.1887 6.28818 8.11691 6.91178 8.26769 7.76617ZM19.9882 15.6557C20.062 16.0742 19.783 16.4732 19.3645 16.547L8.68099 18.4271C8.5015 19.8108 7.32915 20.8867 5.8973 20.8867C4.34135 20.8867 3.07668 19.622 3.07668 18.0661C3.07668 16.7942 3.92796 15.7285 5.08698 15.3778L2.99667 3.48088C2.87462 2.7865 2.20485 2.32392 1.50636 2.4429L0.897108 2.54649C0.486835 2.61521 0.0806513 2.3352 0.010905 1.91673C-0.059867 1.49722 0.221184 1.10028 0.640687 1.02951L1.2458 0.926932C2.76586 0.66128 4.2419 1.68594 4.51166 3.21318L6.64503 15.3572C7.45429 15.5819 8.11793 16.1501 8.4605 16.9029L19.0978 15.03C19.5173 14.9572 19.9153 15.2372 19.9882 15.6557ZM7.17941 18.0661C7.17941 17.3594 6.604 16.784 5.8973 16.784C5.19061 16.784 4.6152 17.3594 4.6152 18.0661C4.6152 18.7728 5.19061 19.3482 5.8973 19.3482C6.604 19.3482 7.17941 18.7728 7.17941 18.0661Z" fill="#00171F"/>
+            </svg>
+        <span>
+            {{ heading_adress_block }}
+        </span>
+    </div>
+    <div class="row gx-3 gx-md-4 gy-3 register_block">
+        {% for key, field in fields %}
+            {% if key != 'country_id' and key != 'zone_id' %}
+                <div class="form-group col-lg-6">
+                    <label class="dark-text fsz-14 fw-500 mb-1" for="{{ key }}">
+                        {% if field.required %}<span class="required">*</span>{% endif %}
+                        {% if field.localization[language_id].name is not empty %}
+                            {{ field.localization[language_id].name }}
+                        {% elseif attribute(_context, 'entry_' ~ key) is not empty %}
+                            {{ attribute(_context, 'entry_' ~ key) }}
+                        {% else %}
+                            {{ field.name }}
+                        {% endif %}
+                    </label>
+                    {% if field.custom_field %}
+                        {% if field.type == 'text' %}
+                            <input type="text" placeholder="{% if field.localization[language_id].placeholder is not empty %}{{ field.localization[language_id].placeholder }}{% endif %}" class="form-control" id="custom_{{ field.custom_field_id }}" name="custom_{{ field.custom_field_id }}" value="{{ field.value }}">
+                        {% elseif field.type == 'textarea' %}
+                            <textarea class="form-control" placeholder="{% if field.localization[language_id].placeholder is not empty %}{{ field.localization[language_id].placeholder }}{% endif %}" id="custom_{{ field.custom_field_id }}" name="custom_{{ field.custom_field_id }}">{{ field.value }}</textarea>
+                        {% elseif field.type == 'date' %}
+                            <input type="date" class="form-control" id="custom_{{ field.custom_field_id }}" name="custom_{{ field.custom_field_id }}" value="{{ field.value }}">
+                        {% elseif field.type == 'datetime' %}
+                            <input type="datetime-local" class="form-control" id="custom_{{ field.custom_field_id }}" name="custom_{{ field.custom_field_id }}" value="{{ field.value }}">
+                        {% elseif field.type == 'time' %}
+                            <input type="time" class="form-control" id="custom_{{ field.custom_field_id }}" name="custom_{{ field.custom_field_id }}" value="{{ field.value }}">
+                        {% elseif field.type == 'select' %}
+                            <select class="form-control rm-select" id="custom_{{ field.custom_field_id }}" name="custom_{{ field.custom_field_id }}">
+                                {% for option in field.options %}
+                                    <option value="{{ option.custom_field_value_id }}" {% if option.custom_field_value_id == field.value %}selected{% endif %}>{{ option.name }}</option>
+                                {% endfor %}
+                            </select>
+                        {% elseif field.type == 'radio' %}
+                            {% for option in field.options %}
+                                <div class="form-check d-flex align-items-center">
+                                        <input class="form-check-input" type="radio" name="custom_{{ field.custom_field_id }}" id="custom_{{ field.custom_field_id }}_{{ option.custom_field_value_id }}" value="{{ option.custom_field_value_id }}" {% if option.custom_field_value_id == field.value %}checked{% endif %}>
+                                    <label for="custom_{{ field.custom_field_id }}_{{ option.custom_field_value_id }}" class="form-check-label">{{ option.name }}</label>
+                                </div>
+                            {% endfor %}
+                        {% elseif field.type == 'checkbox' %}
+                            {% for option in field.options %}
+                                <div class="form-check d-flex align-items-center">
+                                    <input class="form-check-input" type="checkbox" id="custom_{{ field.custom_field_id }}_{{ option.custom_field_value_id }}" name="custom_{{ field.custom_field_id }}[]" value="{{ option.custom_field_value_id }}"  {% if option.custom_field_value_id in field.value %}checked{% endif %}> 
+                                    <label for="custom_{{ field.custom_field_id }}_{{ option.custom_field_value_id }}" class="form-check-label">{{ option.name }}</label>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% else %}
+                        <input type="{{ field.type }}" placeholder="{% if field.localization[language_id].placeholder is not empty %}{{ field.localization[language_id].placeholder }}{% elseif attribute(_context, 'entry_' ~ key) is not empty %}{{ attribute(_context, 'entry_' ~ key) }} {% endif %}" class="form-control" id="{{ key }}" name="{{ key }}" value="{{ field.value }}">
+                    {% endif %}
+                </div>
+            
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}

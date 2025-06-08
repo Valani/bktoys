@@ -1,0 +1,38 @@
+{% if bought_together %}
+<div class="ds-cart-recommended-products rm-module d-flex gap-2 gap-md-3 w-100 overflow-auto">
+    {% for product in bought_together %}
+        <div class="ds-cart-recommended-products-item">
+            <div class="content-block h-100 d-flex gap-2 gap-md-3 p-2 p-md-3">
+                <div class="ds-cart-recommended-products-item-img ds-module-img mr-2 mr-md-3">
+                    <a href="{{ product.href }}">
+                        <img class="d-block mx-auto" src="{{ product.thumb }}" alt="{{ product.name }}" title="{{ product.name }}" width="{{ product.width }}" height="{{ product.height }}"/>
+                    </a>
+                </div>
+                <div class="ds-module-caption d-flex flex-column align-items-start h-100 pt-0 w-100">
+                    <a href="{{ product.href }}" class="rm-module-title dark-text lh-sm">{{ product.name }}</a>
+                    <div class="d-flex gap-3 justify-content-between align-items-end mt-auto w-100">
+                        <div class="rm-module-price mb-0">
+                        {% if product.special %}
+                            <div class="rm-module-price-old light-text text-decoration-line-through mb-1">
+                                {{ product.price }}
+                            </div>
+                            <div class="rm-module-price mb-0">
+                                {{ product.special }}
+                            </div>
+                        {% else %}
+                            <div class="rm-module-price mb-0">
+                                {{ product.price }}
+                            </div>
+                        {% endif %}
+                        </div>
+                        <button type="button" onclick="cart.add({{ product.product_id }});" aria-label="To cart" class="rm-btn secondary rm-cart-btn">
+                            <span class="rm-cart-btn-icon"></span>
+                        </button>
+                        <input type="hidden" name="product_id" value="{{ product.product_id }}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}

@@ -1,0 +1,91 @@
+<div id="comments-container">
+    <div id="comments-list">
+        {% if comments %}
+            {% for comment in comments %}
+                <div class="rm-comments-item">
+                    <div class="row align-items-start align-items-lg-center">
+                        <div class="col-md-3 rm-comments-item-info text-center">
+                            <img src="catalog/view/theme/oct_remarket/img/sprite.svg#include--user-icon" alt="user-icon" width="50" height="50" />
+                            <div class="rm-comments-item-info-name">{{ comment.author }}</div>
+                            <div class="rm-comments-item-info-dat">{{ comment.date_added }}</div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="rm-comments-item-text">{{ comment.text }}</div>
+                            {% if comment.admin_text %}
+                                <div class="rm-store-reviews-item-text-admin">
+                                    <div class="rm-store-reviews-item-text-admin-title">{{ text_admin_title }}</div>
+                                    <p>{{ comment.admin_text }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="p-4">{{ entry_empty_comments }}</div>
+        {% endif %}
+    </div>
+
+    {% if has_more %}
+        <div id="comments-pagination-container">
+            <div id="comments-pagination" class="d-none" data-has-more="{{ has_more ? 'true' : 'false' }}" data-next-page="{{ next_page }}"></div>
+            <div class="text-left">
+                <button id="load-more-comments" class="rm-btn rm-btn-2x dark text-center">{{ oct_show_more }}</button>
+            </div>
+        </div>
+    {% endif %}
+</div>
+<script>
+function loadMoreComments() {
+    if (window.loadingMoreComments) return;
+    window.loadingMoreComments = true;
+
+    var $pagination = $('#comments-pagination');
+    var hasMore = $pagination.attr('data-has-more');
+    var nextPage = $pagination.attr('data-next-page');
+
+    if (hasMore === "false" || !nextPage) {
+        $('#comments-pagination-container').remove();
+        window.loadingMoreComments = false;
+        return;
+    }
+
+    $.ajax({
+        url: 'index.php?route=octemplates/blog/oct_blogarticle/comment', 
+        type: 'GET',
+        data: {
+            blogarticle_id: '{{ blogarticle_id }}',
+            page: nextPage
+        },
+        dataType: 'html',
+        beforeSend: function() {
+            $('#load-more-comments').prop('disabled', true);
+        },
+        complete: function() {
+            $('#load-more-comments').prop('disabled', false);
+        },
+        success: function(html) {
+            var $temp = $('<div>').html(html);
+            var $newComments = $temp.find('#comments-list').children().clone();
+            $('#comments-list').append($newComments);
+
+            var $newPaginationContainer = $temp.find('#comments-pagination-container');
+            if ($newPaginationContainer.length) {
+                $('#comments-pagination-container').replaceWith($newPaginationContainer);
+            } else {
+                $('#comments-pagination-container').remove();
+            }
+            window.loadingMoreComments = false;
+        },
+        error: function() {
+            window.loadingMoreComments = false;
+        }
+    });
+}
+
+$(document).on('click', '#load-more-comments', function(e) {
+    e.preventDefault();
+    loadMoreComments();
+});
+
+</script>

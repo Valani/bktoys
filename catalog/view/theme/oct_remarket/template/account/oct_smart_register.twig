@@ -1,0 +1,345 @@
+{{ header }}
+<div id="account-register" class="container account-container">
+    {{ oct_breadcrumbs }}
+    <main>
+        <div class="row">
+            <div class="col-12">
+                <h1 class="rm-page-title">{{ heading_title }}</h1>
+            </div>
+        </div>
+        <div class="content-top-box">{{ content_top }}</div>
+        {% if error_warning %}
+            <script>
+                rmNotify('danger', '{{ error_warning }}');
+            </script>
+        {% endif %}
+        <div class="row">
+            {{ column_left }}
+            {% if column_left and column_right %}
+                {% set class = 'col-xl-6' %}
+            {% elseif column_left or column_right %}
+                {% set class = 'col-xl-9' %}
+            {% else %}
+                {% set class = 'col-xl-12' %}
+            {% endif %}
+            <div id="content" class="{{ class }}">
+                <div class="rm-content rm-account-content h-100">
+                    <form id="register_form" action="{{ action }}" method="post" class="form-horizontal" novalidate>
+                        <fieldset class="p-0">
+                            <div class="content-block-title dark-text with-border-bottom mb-3 fw-500 fsz-16 d-flex align-items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="21" viewBox="0 0 20 21" fill="none" role="img">
+                                    <title>{{ heading_user_block }}</title>
+                                    <path d="M15.7692 0.531982H4.23077C1.50256 0.531982 0 2.03455 0 4.76275V16.3012C0 19.0294 1.50256 20.532 4.23077 20.532H15.7692C18.4974 20.532 20 19.0294 20 16.3012V4.76275C20 2.03455 18.4974 0.531982 15.7692 0.531982ZM15.3846 18.9935H4.61539V18.6038C4.61539 17.7494 4.87696 14.9627 8.24619 14.9627H11.7538C15.123 14.9627 15.3846 17.7494 15.3846 18.6038V18.9935ZM18.4615 16.3012C18.4615 17.7433 17.9867 18.5494 16.9231 18.8509V18.6038C16.9231 16.214 15.5692 13.4242 11.7538 13.4242H8.24619C4.43081 13.4242 3.07692 16.2151 3.07692 18.6038V18.8509C2.01333 18.5494 1.53846 17.7422 1.53846 16.3012V4.76275C1.53846 2.87557 2.34359 2.07044 4.23077 2.07044H15.7692C17.6564 2.07044 18.4615 2.87557 18.4615 4.76275V16.3012ZM10.0083 4.63455C7.88826 4.63455 6.16211 6.35967 6.16211 8.4807C6.16211 10.6017 7.88826 12.3269 10.0083 12.3269C12.1283 12.3269 13.8544 10.6017 13.8544 8.4807C13.8544 6.35967 12.1283 4.63455 10.0083 4.63455ZM10.0083 10.7884C8.73647 10.7884 7.70057 9.75352 7.70057 8.4807C7.70057 7.20788 8.73647 6.17301 10.0083 6.17301C11.2801 6.17301 12.316 7.20788 12.316 8.4807C12.316 9.75352 11.2801 10.7884 10.0083 10.7884Z" fill="#00171F"></path>
+                                </svg>
+                                <span>
+                                    {{ heading_user_block }}
+                                </span>
+                            </div>
+                            <div class="row gx-3 gx-md-4 gy-3 register_block">
+                                {% if not user_logged %}
+                                    <div class="form-group col-lg-12">
+                                        <div class="d-flex align-items-center alert alert-info py-2 px-3 mb-0 br-8 fsz-14">
+                                            {{ text_have_account }} <a onclick="octPopupLogin();" class="blue-link ms-2 fsz-14 fw-300">{{ heading_login_block }}</a>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                {% for key, field in fields %}
+                                    <div class="form-group col-lg-6">
+                                        <label class="dark-text fsz-14 fw-500 mb-1" for="{{ key }}">
+                                            {% if field.required %}<span class="required">*</span>{% endif %}
+                                            {% if field.localization[language_id].name is not empty %}
+                                                {{ field.localization[language_id].name }}
+                                            {% elseif attribute(_context, 'entry_' ~ key) is not empty %}
+                                                {{ attribute(_context, 'entry_' ~ key) }}
+                                            {% else %}
+                                                {{ field.name }}
+                                            {% endif %}
+                                        </label>
+                                        <input type="{{ field.type }}"
+                                               placeholder="{% if field.localization[language_id].placeholder is not empty %}{{ field.localization[language_id].placeholder }}{% elseif attribute(_context, 'entry_' ~ key) is not empty %}{{ attribute(_context, 'entry_' ~ key) }}{% endif %}"
+                                               class="form-control"
+                                               id="{{ key }}"
+                                               name="{{ key }}"
+                                               value="{{ field.value }}"
+                                               {% if field.required %} required aria-required="true" {% endif %}>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            {% if newsletter_status %}
+                                <div class="form-group mb-2">
+                                    <legend class="h5 mt-3 mb-2">{{ text_newsletter }}</legend>
+                                    <div class="d-flex">
+                                        {% if newsletter %}
+                                            <div class="radio">
+                                                <label class="option">
+                                                    <input type="radio" name="newsletter" id="checkYes" value="1" class="input-radio" checked="checked" />
+						                            <span class="radio-box"></span>
+                                                    {{ text_yes }}
+                                                </label>
+                                            </div>
+                                            <div class="radio">
+                                                <label class="option">
+                                                    <input type="radio" name="newsletter" id="checkNo" value="0" class="input-radio" />
+						                            <span class="radio-box"></span>
+                                                    {{ text_no }}
+                                                </label>
+                                            </div>
+                                        {% else %}
+                                            <div class="radio">
+                                                <label class="option" for="checkYes">
+                                                    <input type="radio" name="newsletter" id="checkYes" value="1" class="input-radio" />
+						                            <span class="radio-box"></span>
+                                                    {{ text_yes }}
+                                                </label>
+                                            </div>
+                                            <div class="radio">
+                                                <label class="option" for="checkNo">
+                                                    <input type="radio" name="newsletter" id="checkNo" value="0" class="input-radio" checked="checked" />
+						                            <span class="radio-box"></span>
+                                                    {{ text_no }}
+                                                </label>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </fieldset>
+                        <div class="form-group register-form mb-0">
+                            <div class="row">
+                                <label class="col-md-12 dark-text fsz-14 fw-500 mb-1 mt-2" for="password">
+                                    <span class="required">*</span> {{ entry_password }}
+                                </label>
+                                <div class="col-md-6">
+                                    <div class="input-group password-input-group">
+                                        <input type="password"
+                                               name="password"
+                                               oninput="updateStrengthIndicator(this.value)"
+                                               value="{{ password }}"
+                                               placeholder="{{ entry_password }}"
+                                               id="password"
+                                               class="form-control br-6 px-5"
+                                               required aria-required="true">
+                                        <input type="number" class="d-none" id="length" value="12" min="8" max="24">
+                                        <button type="button" class="button button-transparent button-show position-absolute" onclick="togglePasswordVisibility();return false;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="19" height="16" viewBox="0 0 19 16" fill="none" role="img">
+                                                <title>{{ entry_show_hide_password }}</title>
+
+                                                <path d="M18.0244 6.22877C16.8124 4.199 14.0921 0.793945 9.5 0.793945C4.90786 0.793945 2.18755 4.199 0.975598 6.22877C0.341467 7.28842 0.341467 8.60571 0.975598 9.66629C2.18755 11.6961 4.90786 15.1011 9.5 15.1011C14.0921 15.1011 16.8124 11.6961 18.0244 9.66629C18.6585 8.60571 18.6585 7.28934 18.0244 6.22877ZM16.8363 8.95553C15.7748 10.7333 13.4091 13.7165 9.5 13.7165C5.59091 13.7165 3.22515 10.7342 2.16366 8.95553C1.79259 8.3334 1.79259 7.56076 2.16366 6.93863C3.22515 5.16085 5.59091 2.17761 9.5 2.17761C13.4091 2.17761 15.7748 5.15992 16.8363 6.93863C17.2083 7.56168 17.2083 8.3334 16.8363 8.95553ZM9.5 4.0246C7.33639 4.0246 5.57707 5.78484 5.57707 7.94753C5.57707 10.1102 7.33639 11.8705 9.5 11.8705C11.6636 11.8705 13.4229 10.1102 13.4229 7.94753C13.4229 5.78484 11.6636 4.0246 9.5 4.0246ZM9.5 10.4859C8.09974 10.4859 6.96163 9.34778 6.96163 7.94753C6.96163 6.54727 8.09974 5.40916 9.5 5.40916C10.9003 5.40916 12.0384 6.54727 12.0384 7.94753C12.0384 9.34778 10.9003 10.4859 9.5 10.4859Z" fill="#00171F"></path>
+                                            </svg>
+                                        </button>
+                                        <button type="button" class="button button-transparent button-copy position-absolute" onclick="copyToClipboard();return false;">
+                                            <svg width="18" height="21" viewBox="0 0 18 21" fill="none" xmlns="http://www.w3.org/2000/svg" role="img">
+                                                <title>{{ entry_copy_password }}</title>
+                                                <path d="M17.7863 6.06681L12.9083 1.18876C12.7707 1.0512 12.5853 0.974121 12.3911 0.974121H7.90325C5.95008 0.974121 4.83017 2.09412 4.83017 4.04729V4.87656H4.00081C2.04764 4.87656 0.927734 5.99655 0.927734 7.94973V17.901C0.927734 19.8532 2.04764 20.9741 4.00081 20.9741H11.0244C12.9776 20.9741 14.0975 19.8541 14.0975 17.901V17.0717H14.9269C16.88 17.0717 18 15.9517 18 13.9985V6.58388C18.0009 6.38973 17.9239 6.20339 17.7863 6.06681ZM13.1229 3.47266L15.5023 5.85217H14.8302C13.6009 5.85217 13.1229 5.37315 13.1229 4.14485V3.47266ZM12.6351 17.901C12.6351 19.059 12.1834 19.5107 11.0254 19.5107H4.00176C2.84274 19.5107 2.3921 19.059 2.3921 17.901V7.94973C2.3921 6.79168 2.84371 6.33997 4.00176 6.33997H4.83113V13.9985C4.83113 15.9507 5.95103 17.0717 7.9042 17.0717H12.636V17.901H12.6351ZM14.9278 15.6083H7.9042C6.74518 15.6083 6.29454 15.1566 6.29454 13.9985V4.04729C6.29454 2.88924 6.74615 2.43754 7.9042 2.43754H11.6604V4.14485C11.6604 6.18973 12.7862 7.31558 14.8311 7.31558H16.5384V13.9985C16.5375 15.1566 16.0859 15.6083 14.9278 15.6083Z" fill="#003459"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div id="strengthIndicator" class="strength-indicator mb-2"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <button type="button" class="rm-btn secondary w-100 fsz-14" onclick="generatePassword(); return false;">{{ text_generate_password }}</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2 d-none">
+                            <input type="text" name="email_check_confirm" value="" />
+                        </div>
+                        <div class="mt-3">{{ captcha }}</div>
+                        {% if text_agree %}
+                            <div class="form-checkbox-group">
+                                <label>
+                                    {% if agree %}
+                                    <input type="checkbox" name="agree" id="registerAgree" class="rm-form-checkbox-input" value="1" checked="checked" />
+                                    {% else %}
+                                    <input type="checkbox" name="agree" id="registerAgree" class="rm-form-checkbox-input" value="1" />
+                                    {% endif %}
+                                    <span class="check-box"></span>
+                                    {{ text_agree }}
+                                </label>
+                            </div>
+                        {% endif %}
+                        <input type="hidden" name="csrf_reg_token" value="{{ csrf_reg_token }}" />
+                        <button type="submit" class="rm-btn primary sc-account-login-button" id="button-reg">{{ button_continue }}</button>
+                    </form>
+                </div>
+            </div>
+            {{ column_right }}
+        </div>
+        {{ content_bottom }}
+    </main>
+</div>
+{% if phone_mask %}
+    <script src="catalog/view/theme/oct_remarket/js/jquery.inputmask.bundle.min.js"></script>
+{% endif %}
+<script>
+    function generatePassword() {
+        const length = document.getElementById('length').value;
+        const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+~`|}{[]:;?><,./-=";
+        let password = "";
+        const lowercaseLetters = "abcdefghijklmnopqrstuvwxyz";
+        const uppercaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const numbers = "0123456789";
+        const specialChars = "!@#$%^&*()_+~`|}{[]:;?><,./-=";
+        password += lowercaseLetters.charAt(Math.floor(Math.random() * lowercaseLetters.length));
+        password += uppercaseLetters.charAt(Math.floor(Math.random() * uppercaseLetters.length));
+        password += numbers.charAt(Math.floor(Math.random() * numbers.length));
+        password += specialChars.charAt(Math.floor(Math.random() * specialChars.length));
+        for (let i = password.length; i < length; i++) {
+            password += charset.charAt(Math.floor(Math.random() * charset.length));
+        }
+        password = shuffle(password);
+        document.getElementById('password').value = password;
+        updateStrengthIndicator(password);
+    }
+
+    function shuffle(string) {
+        const array = string.split('');
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array.join('');
+    }
+
+    function togglePasswordVisibility() {
+        const passwordInput = document.getElementById('password');
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+    }
+
+    function copyToClipboard() {
+        const passwordInput = document.getElementById('password');
+        const currentType = passwordInput.getAttribute('type');
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(passwordInput.value).then(() => {
+                rmNotify('success', '{{ text_copy_success }}');
+            }).catch(() => {
+                rmNotify('warning', 'Copy failed.');
+            });
+        } else {
+            passwordInput.setAttribute('type', 'text');
+            passwordInput.select();
+            document.execCommand('copy');
+            rmNotify('success', '{{ text_copy_success }}');
+        }
+        passwordInput.setAttribute('type', currentType);
+    }
+
+    function evaluatePasswordStrength(password) {
+        let strengthPoints = 0;
+        const diversityFactors = [
+            { regex: /[a-z]/, points: 1 },
+            { regex: /[A-Z]/, points: 1 },
+            { regex: /[0-9]/, points: 1 },
+            { regex: /[^a-zA-Z0-9]/, points: 1 }
+        ];
+        diversityFactors.forEach(factor => {
+            if (factor.regex.test(password)) {
+                strengthPoints += factor.points;
+            }
+        });
+        const lengthPoints = Math.min(Math.floor(password.length / 4), 5);
+        strengthPoints += lengthPoints;
+        return strengthPoints;
+    }
+
+    function updateStrengthIndicator(password) {
+        const strengthPoints = evaluatePasswordStrength(password);
+        const strengthIndicator = document.getElementById('strengthIndicator');
+        let backgroundColor;
+        let width;
+        if (strengthPoints >= 7) {
+            backgroundColor = 'green';
+            width = '100%';
+        } else if (strengthPoints >= 4) {
+            backgroundColor = 'orange';
+            width = `${(strengthPoints / 7) * 100}%`;
+        } else {
+            backgroundColor = 'red';
+            width = `${(strengthPoints / 7) * 100}%`;
+        }
+        strengthIndicator.style.width = width;
+        strengthIndicator.style.backgroundColor = backgroundColor;
+    }
+
+    $(document).ready(function() {
+        $('#register_form').submit(function(e) {
+            e.preventDefault();
+            var form = $(this);
+            var url = form.attr('action');
+            $.ajax({
+                type: "POST",
+                beforeSend: function () {
+                    $('#button-reg').button('loading');
+                    masked('body', true);
+                    $('#button-reg').data('original-content', $('#button-reg').html());
+                    $('#button-reg').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> &nbsp;{{ text_loading }}').prop('disabled', true);
+                },
+                complete: function () {
+                    $('#button-reg').button('reset');
+                    masked('body', false);
+                    setTimeout(function () {
+                        $('#button-reg').html($('#button-reg').data('original-content')).prop('disabled', false);
+                    }, 600);
+                },
+                url: url,
+                data: form.serialize(),
+                success: function(data) {
+                    if (data['error']) {
+                        var errorMessages = '';
+                        for (var key in data['error']) {
+                            if (data['error'].hasOwnProperty(key)) {
+                                $('#register_form input[name="' + key + '"]').addClass('error_style');
+                                errorMessages += '<p class="mb-2">' + data['error'][key] + '</p>\n';
+                            }
+                        }
+                        scrollToItem('.error_style');
+                        rmNotify('danger', errorMessages);
+                        if (data['error']['warning_agree'] !== undefined) {
+                            $('#registerAgree').addClass('error_style');
+                        }
+                        if (data['error']['logged']) {
+                            location = '{{ account_url }}';
+                        }
+                    }
+                    if (data['redirect']) {
+                        window.location.href = '{{ account_url }}';
+                    }
+                    if (data['warning']) {
+                        rmNotify('warning', data['warning']);
+                    }
+                },
+                error: function() {
+                    console.log('An error occurred while processing your request.');
+                }
+            });
+        });
+        $(document).on('input', 'input', function() {
+            $(this).removeClass('error_style');
+            $(this).next('.error_message').remove();
+        });
+    });
+
+    function scrollToItem(selector, shipping = false) {
+        const element = document.querySelector(selector);
+        if (element) {
+            if (shipping) {
+                element.scrollIntoView({behavior: 'smooth', block: 'start', inline: 'nearest'});
+                return;
+            }
+            const rect = element.getBoundingClientRect();
+            window.scrollTo({
+                top: rect.top + window.scrollY - (window.innerHeight / 2),
+                behavior: 'smooth'
+            });
+        }
+    }
+
+    {% if phone_mask %}
+    $('#telephone').inputmask({
+        mask: '{{ phone_mask }}',
+        clearMaskOnLostFocus: false
+    });
+    {% endif %}
+</script>
+{{ footer }}

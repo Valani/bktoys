@@ -1,0 +1,937 @@
+{{ header }}
+
+<div class="container-fluid container-xl flex-grow-1">
+	<nav aria-label="breadcrumb">
+		<ul class="breadcrumb rm-breadcrumb">
+			{% for breadcrumb in breadcrumbs %}
+				{% if loop.last %}
+					<li class="breadcrumb-item rm-breadcrumb-item">{{ breadcrumb.text }}</li>
+				{% else %}
+					<li class="breadcrumb-item rm-breadcrumb-item">
+						<a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a>
+					</li>
+				{% endif %}
+			{% endfor %}
+		</ul>
+	</nav>
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="rm-main-shop-title">{{ heading_title }}</h1>
+        </div>
+    </div>
+	<main>
+		{{ content_top }}
+		{% if error_warning %}
+			<div class="alert alert-danger d-none">
+				<i class="fa fa-exclamation-circle"></i>
+				{{ error_warning }}
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+			</div>
+			<script>
+				$(function () {
+					$('#button-go').attr('disabled', 'disabled');
+					$('#button-go').addClass('disabled');
+					});
+			</script>
+		{% endif %}
+		<div class="oct-checkout row g-3 g-md-4">
+			<div class="col-lg-8 d-flex flex-column oct-checkout-content">
+                {% if recommended_poducts %}
+                    <div id="recommended_block" class="content-block mb-3 oct-checkout-block order-{{ recommended_block_sort }}">
+                        {{ recommended_poducts }}
+                    </div>
+                {% endif %}
+                <div id="cart-table" class="mb-3 content-block oct-checkout-block fsz-14 order-{{ cart_block_sort }}{% if not cart_status %} d-none{% endif %}">
+                    {% if weight %}<div class="mb-3 fsz-16">{{ text_order_weight }}: {{ weight}}</div>{% endif %}
+                    {% if attention %}
+                        <div class="alert alert-info d-flex align-items-start justify-content-between fsz-14">
+                            <span class="d-flex"><i class="fa fa-info-circle mr-2 pt-1"></i> {{ attention }}</span>
+                            <button type="button" class="close ds-btn ds-btn-transparent no-btn ms-auto" data-dismiss="alert">&times;</button>
+                        </div>
+                    {% endif %}
+                    {% set productKey = 0 %}
+                    {% for product in products %}
+                        {% set productKey = productKey + 1 %}
+                        <div class="ds-cart-item oct-checkout-block oct-checkout-cart">
+                            <div class="ds-cart-item-info d-flex mb-3 position-relative">
+                                {% if product.thumb %}
+                                    <div class="ds-cart-item-img mr-3">
+                                        <a href="{{ product.href }}">
+                                            <img src="{{ product.thumb }}" alt="{{ product.name }}" title="{{ product.name }}" width="48" height="48"/>
+                                        </a>
+                                    </div>
+                                {% endif %}
+                                <div class="ds-cart-item-desc pr-4">
+                                    <div class="ds-cart-item-title fw-300 fsz-16">
+                                        <a href="{{ product.href }}" class="dark-text">{{ product.name }}</a>
+                                        {% if not product.stock %}
+                                            <span class="required ml-1">***</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="ds-cart-item-option fsz-10">{{ column_model }}: {{ product.model }}</div>
+                                    {% if product.option %}
+                                        <div class="ds-cart-item-options">
+                                            {% for option in product['option'] %}
+                                                <div class="ds-cart-item-option fsz-10">
+                                                    {{ option.name }}:
+                                                    <span class="light-text">{{ option.value }}</span>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    {% if product.reward %}
+                                        <small>{{ product.reward }}</small>
+                                    {% endif %}
+                                    {% if product.recurring %}
+                                        <br/>
+                                        <small>{{ text_recurring_item }}{{ product.recurring }}</small>
+                                    {% endif %}
+                                </div>
+                                <button class="no-btn position-absolute" aria-label="Delete" onclick="update(this, 'remove');">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                        viewBox="0 0 14 14" fill="none">
+                                        <path
+                                            d="M13.7783 12.2207C14.0713 12.5137 14.0713 12.9888 13.7783 13.2818C13.6323 13.4278 13.4403 13.5017 13.2483 13.5017C13.0563 13.5017 12.8643 13.4288 12.7183 13.2818L7.24828 7.81173L1.77828 13.2818C1.63228 13.4278 1.44028 13.5017 1.24828 13.5017C1.05628 13.5017 0.864285 13.4288 0.718285 13.2818C0.425285 12.9888 0.425285 12.5137 0.718285 12.2207L6.18829 6.75076L0.718285 1.28079C0.425285 0.987785 0.425285 0.51275 0.718285 0.21975C1.01129 -0.07325 1.48629 -0.07325 1.77929 0.21975L7.24929 5.68978L12.7193 0.21975C13.0123 -0.07325 13.4873 -0.07325 13.7803 0.21975C14.0733 0.51275 14.0733 0.987785 13.7803 1.28079L8.31028 6.75076L13.7783 12.2207Z"
+                                            fill="#D84040" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="ds-cart-item-actions d-flex align-items-center justify-content-between">
+                                <div class="ds-cart-item-buttons d-flex">
+                                    <div class="btn-group rm-product-quantity">
+                                        <input name="product_id_q" value="{{ product.product_id }}" style="display: none;" type="hidden"/>
+                                        <input name="product_id" value="{{ product.key }}" style="display: none;" type="hidden"/>
+                                        <input id="quantity-{{ product.quantity }}-{{ productKey }}" type="text" name="quantity" value="{{ product.quantity }}" class="form-control" onchange="update_manual(this, '{{ product.key }}');" aria-label="Quantity" inputmode="numeric">
+                                        <div class="d-flex flex-column">
+                                            <button type="button" aria-label="Plus" class="rm-product-quantity-btn-plus d-flex align-items-center justify-content-center" onclick="update_manual('#quantity-{{ product.quantity }}-{{ productKey }}', '{{ product.key }}', 'plus');">
+                                                <span></span>
+                                            </button>
+                                            <div class="rm-product-quantity-btn-border"></div>
+                                            <button type="button" aria-label="Minus" class="rm-product-quantity-btn-minus d-flex align-items-center justify-content-center" onclick="update_manual('#quantity-{{ product.quantity }}-{{ productKey }}', '{{ product.key }}', 'minus');">
+                                                <span></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if product.total and product.price %}
+                                    <div class="ds-cart-item-price text-right">
+                                        <div class="oct-checkout-cart-total">
+                                            {{ column_total }} {{ product.total }}
+                                        </div>
+                                        <div class="oct-checkout-cart-price">
+                                            {{ column_price }} {{ product.price }}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+				<div class="content-block mb-3 oct-checkout-block order-{{ customer_block_sort }}" id="customer-fields-block">
+					{{ customer_fields_block }}
+				</div>
+                
+                {% if not user_logged %}
+                    <div class="content-block mb-3 oct-checkout-block order-{{ country_block_sort }}{% if not country_zone_fields_block %} d-none{% endif %}" id="country-zone-fields-block">
+                        {{ country_zone_fields_block }}
+                    </div>
+                {% endif %}
+
+               	<div class="row mb-3 order-{{ delivery_block_sort }}">
+					<div class="col-md-6 mb-3 mb-md-0" id="oct-shipping-block">
+						<div class="content-block fsz-14 shipping-method oct-checkout-block h-100">
+							<div class="content-block-title dark-text with-border-bottom pb-3 mb-3 fsz-16 fw-500">
+								<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+									<path
+										d="M19.9457 10.06C19.9457 10.0549 19.9487 10.0508 19.9487 10.0457C19.9487 10.0313 19.9416 10.02 19.9405 10.0057C19.9293 9.93593 19.9139 9.86621 19.8985 9.79647C19.8913 9.77596 19.8893 9.75442 19.8811 9.73494C19.839 9.55648 19.7959 9.37799 19.7282 9.20261L18.6637 6.57303C18.1929 5.38027 17.7058 4.14752 15.0967 4.14752H12.8199V2.35274C12.8199 1.07999 11.784 0.045166 10.5123 0.045166H2.30758C1.03585 0.045166 0 1.07999 0 2.35274V13.6342C0 14.829 0.915805 15.8023 2.07985 15.9192C2.07062 16.0125 2.05118 16.1028 2.05118 16.1982C2.05118 17.753 3.31573 19.0186 4.87155 19.0186C6.42737 19.0186 7.69192 17.753 7.69192 16.1982C7.69192 16.11 7.67344 16.0269 7.66626 15.9418H12.3337C12.3255 16.0269 12.3081 16.11 12.3081 16.1982C12.3081 17.753 13.5726 19.0186 15.1284 19.0186C16.6843 19.0186 17.9488 17.753 17.9488 16.1982C17.9488 16.1028 17.9304 16.0115 17.9202 15.9192C19.0842 15.8023 20 14.829 20 13.6342V10.6395C20 10.4456 19.9744 10.2528 19.9457 10.06ZM15.0977 5.68691C16.6596 5.68691 16.8053 6.05307 17.2361 7.14429L18.0986 9.27647H12.8209V5.68691H15.0977ZM4.87255 17.4812C4.16592 17.4812 3.59057 16.9058 3.59057 16.1992C3.59057 15.4926 4.16592 14.9172 4.87255 14.9172C5.57918 14.9172 6.15454 15.4926 6.15454 16.1992C6.15454 16.9058 5.57918 17.4812 4.87255 17.4812ZM15.1284 17.4812C14.4218 17.4812 13.8465 16.9058 13.8465 16.1992C13.8465 15.4926 14.4218 14.9172 15.1284 14.9172C15.8351 14.9172 16.4104 15.4926 16.4104 16.1992C16.4104 16.9058 15.8351 17.4812 15.1284 17.4812ZM17.6924 14.4044H17.2863C16.7684 13.7829 15.9992 13.3788 15.1284 13.3788C14.2577 13.3788 13.4885 13.7829 12.9706 14.4044H7.0294C6.51147 13.7829 5.74228 13.3788 4.87155 13.3788C4.00083 13.3788 3.23163 13.7829 2.71371 14.4044H2.30758C1.88401 14.4044 1.53838 14.0598 1.53838 13.6352V10.8149H7.94832C8.37291 10.8149 8.71751 10.4703 8.71751 10.0457C8.71751 9.62107 8.37291 9.27647 7.94832 9.27647H1.53838V2.35374C1.53838 1.92915 1.88401 1.58455 2.30758 1.58455H10.5123C10.9359 1.58455 11.2815 1.92915 11.2815 2.35374V10.8149H18.4606V13.6352C18.4616 14.0598 18.116 14.4044 17.6924 14.4044Z"
+										fill="#00171F" />
+								</svg>
+								{{ heading_shipping_block }}
+							</div>
+							{% if error_warning %}
+								<div class="alert alert-warning fsz-14">
+									<i class="fa fa-exclamation-circle"></i>
+									{{ error_warning }}
+								</div>
+							{% endif %}
+							{% if shipping_methods %}
+								<p class="secondary-text mb-3">{{ text_shipping_method }}</p>
+                                {% set first_checked = false %}
+                                {% for shipping_method in shipping_methods %}
+                                    <div class="form-check-item p-3 mt-2 br-4">
+                                        <p class="fw-700 dark-text mb-2">{{ shipping_method.title }}</p>
+                                        {% if not shipping_method.error %}
+                                            {% for quote in shipping_method['quote'] %}
+                                                <div class="form-check">
+                                                    <label class="form-check-label d-flex align-items-center">
+                                                        {% if not first_checked and autoselect_first_shipping %}
+                                                            {% set code = quote.code %}
+                                                            {% set first_checked = true %}
+                                                            <input type="radio" class="form-check-input" name="shipping_method" value="{{ quote.code }}" title="{{ quote.title }}"  checked="checked"/>
+                                                        {% else %}
+                                                            <input type="radio" class="form-check-input" name="shipping_method" value="{{ quote.code }}" title="{{ quote.title }}"/>
+                                                        {% endif %}
+                                                        {% if quote.image %}
+                                                            <img src="{{ quote.image }}" alt="{{ quote.title }}" class="mr-2" width="20" height="20" />
+                                                        {% endif %}
+                                                        {{ quote.title }}{% if cost_in_shipping_block %} - {{ quote.text }}{% endif %}
+                                                    </label>
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <div class="alert alert-danger fsz-14">{{ shipping_method.error }}</div>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+							{% endif %}
+						</div>
+					</div>
+					<div class="col-md-6" id="oct-payment-block">
+						<div class="ds-checkout-payment content-block fsz-14 payment-method oct-checkout-block">
+							<div class="content-block-title dark-text with-border-bottom pb-3 mb-3 fsz-16 fw-500">
+								<svg xmlns="http://www.w3.org/2000/svg" width="20" height="17" viewBox="0 0 20 17" fill="none">
+									<path
+										d="M16.1538 0.583252H3.84615C1.36615 0.583252 0 1.94941 0 4.42941V12.6345C0 15.1145 1.36615 16.4807 3.84615 16.4807H16.1538C18.6338 16.4807 20 15.1145 20 12.6345V4.42941C20 1.94941 18.6338 0.583252 16.1538 0.583252ZM18.4615 12.6345C18.4615 14.252 17.7713 14.9422 16.1538 14.9422H3.84615C2.22872 14.9422 1.53846 14.252 1.53846 12.6345V7.24992H18.4615V12.6345ZM18.4615 5.71146H1.53846V4.42941C1.53846 2.81197 2.22872 2.12171 3.84615 2.12171H16.1538C17.7713 2.12171 18.4615 2.81197 18.4615 4.42941V5.71146ZM4.10256 11.6089C4.10256 11.1843 4.44718 10.8397 4.8718 10.8397H7.94872C8.37333 10.8397 8.71795 11.1843 8.71795 11.6089C8.71795 12.0335 8.37333 12.3781 7.94872 12.3781H4.8718C4.44718 12.3781 4.10256 12.0335 4.10256 11.6089Z"
+										fill="#00171F" />
+								</svg>
+								{{ heading_payment_block }}
+							</div>
+							{% if error_warning %}
+								<div class="alert alert-warning fsz-14">
+									<i class="fa fa-exclamation-circle"></i>
+									{{ error_warning }}
+								</div>
+							{% endif %}
+							{% if payment_methods %}
+								<p class="secondary-text mb-3">{{ text_payment_method }}</p>
+								{% for payment_method in payment_methods %}
+									<div class="form-check-item p-3 mt-2 br-4 payment-method-check-item">
+									    <div class="form-check">
+    										<label class="form-check-label d-flex align-items-center">
+    											{% if loop.first %}
+    												{% set code = payment_method.code %}
+    												<input type="radio" class="form-check-input" name="payment_method" value="{{ payment_method.code }}" title="{{ payment_method.title }}" checked="checked"/>
+    											{% else %}
+    												<input type="radio" class="form-check-input" name="payment_method" value="{{ payment_method.code }}" title="{{ payment_method.title }}"/>
+    											{% endif %}
+                                                {% if payment_method.image %}
+                                                    <img src="{{ payment_method.image }}" alt="{{ payment_method.title }}"  class="mr-2" width="20" height="20" />
+                                                {% endif %}
+    											{{ payment_method.title }}
+    										</label>
+    									</div>
+                                        {% if payment_method.description %}
+                                            <p class="fsz-12 secondary-text mt-2">{{ payment_method.description }}</p>
+                                        {% endif %}
+									</div>
+								{% endfor %}
+							{% endif %}
+						</div>
+					</div>
+				</div> 
+
+                {% if not user_logged %}
+                <div class="content-block mb-3 oct-checkout-block order-{{ address_block_sort }}{% if not customer_address_fields %} d-none{% endif %}" id="customer_address_fields">
+                    {{ customer_address_fields}}
+                </div>
+                {% endif %}
+
+                {% if commentIsAviable %} 
+                    <div class="content-block mb-3 oct-checkout-block order-{{ comment_block_sort }}">
+                        <div class="content-block-title dark-text with-border-bottom pb-3 mb-3 fsz-16 d-flex align-items-center justify-content-between fw-500">{{ commentData['title'][language_id]|default(entry_comment) }}</div>
+                        <div class="form-group">
+                            <textarea name="comment" rows="7" class="form-control" placeholder="{{ commentData['placeholder'][language_id]|default(entry_comment) }}" aria-label="{{ commentData['title'][language_id]|default(entry_comment) }}"></textarea>
+                        </div>
+                    </div>
+                {% endif %}
+			</div>
+			<div class="col-lg-4 oct-checkout-actions">
+				<div class="ds-sticky-column ds-cart-column content-block fsz-14 sticky-top oct-checkout-block oct-checkout-actions">
+					{% if loyalty_check %}
+                        <div class="ds-cart-column-title dark-text fw-500 mb-2">{{ text_next }}</div>
+						<p class="ds-cart-column-text light-text fsz-14 pb-2 mb-3">{{ text_next_choice }}</p>
+                        {% if coupon_status_check %}
+                            <div class="rm-cart-block pb-3 mb-3">
+                                <div class="rm-content-title rm-cart-block-title d-flex align-items-center justify-content-between justify-content-md-start">
+                                    {{ entry_coupon_title }}
+                                </div>
+                                <div id="collapse-coupon" class="row rm-cart-block-row">
+                                    <div class="col-12">
+                                        <label for="input-coupon" class="control-label fsz-12 light-text mb-2 mt-3">{{ entry_coupon }}</label>
+                                        <div class="input-group">
+                                            <input type="text" name="coupon" value="{{ coupon }}" placeholder="{{ entry_coupon }}" id="input-coupon" class="form-control py-0"/>
+                                            <span class="input-group-btn">
+                                                <input type="button" value="{{ text_apply }}" id="button-coupon" data-loading-text="{{ text_loading }}" class="rm-btn rm-input-with-btn dark"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if voucher_status_check %}
+                            <div class="rm-cart-block pb-3 mb-3">
+                                <div class="rm-content-title rm-cart-block-title d-flex align-items-center justify-content-between justify-content-md-start">
+                                    {{ entry_voucher_title }}
+                                </div>
+                                <div id="collapse-voucher" class="row rm-cart-block-row">
+		                            <div class="col-12">
+		                                <label for="input-voucher" class="control-label fsz-12 light-text mb-2 mt-3">{{ entry_voucher }}</label>
+                                        <div class="input-group">
+                                            <input type="text" name="voucher" value="{{ voucher }}" placeholder="{{ entry_voucher }}" id="input-voucher" class="form-control py-0"/>
+                                            <span class="input-group-btn">
+                                                <input type="button" value="{{ text_apply }}" id="button-voucher" data-loading-text="{{ text_loading }}" class="rm-btn rm-input-with-btn dark"/>
+                                            </span>
+                                        </div>
+		                            </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if has_reward and user_logged %}
+                            <div class="rm-cart-block pb-3 mb-3">
+                                <div class="rm-content-title rm-cart-block-title d-flex align-items-center justify-content-between justify-content-md-start">
+                                    {{ entry_reward_title }}
+                                </div>
+                                <div id="collapse-reward" class="row rm-cart-block-row">
+                                    <div class="col-12">
+                                        <label for="input-reward" class="control-label fsz-12 light-text mb-2 mt-3">{{ entry_reward }}</label>
+                                        <div class="input-group">
+                                            <input type="text" name="reward" value="{{ reward }}" placeholder="{{ entry_reward_title }}" id="input-reward" class="form-control py-0"/>
+                                            <span class="input-group-btn">
+                                                <input type="button" value="{{ text_apply }}" id="button-reward" data-loading-text="{{ text_loading }}" class="rm-btn rm-input-with-btn dark"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <script>
+                            $( document ).ready(function() {
+                                $('.rm-cart-block-title').on('click', function() {
+                                    $(this).toggleClass('clicked');
+                                    $(this).next().toggleClass('opened');
+                                });
+                            });
+                        </script>
+					{% endif %}
+					<div class="ds-cart-column-total text-end mb-2">
+                        {% if free_shipping_from_text %}
+                            <div class="oct-bottom-free-shipping-from dark-text text-start fsz-14 fw-500 pb-3{% if total_percentage >= 100 %} green-text fsz-14{% endif %}">
+                            {{ free_shipping_from_text }}
+                                {% if total_percentage < 100 %}
+                                    <div class="progress mt-1">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="{{ total_value }}" aria-valuemin="0" aria-valuemax="{{ oct_smart_checkout_data.free_shipping_from }}" style="width: {{ total_percentage }}%"></div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+						{% for total in totals %}
+							<div class="ds-cart-column-total-item mb-2 d-flex align-items-start justify-content-between lh-sm">
+								<span class="me-auto pe-3 light-text w-50">{{ total.title }}</span> <span class="dark-text fw-600 fsz-16 ds-cart-column-total-item-text w-50 text-right{% if total.code == 'oct_product_set' %} red-text{% endif %}">{{ total.text }}</span>
+							</div>
+						{% endfor %}
+						{% if weight %}
+							<div class="ds-cart-column-total-item d-flex align-items-center justify-content-between">
+								{{ text_weight }} <span class="dark-text fw-600">{{ weight }}</span>
+							</div>
+						{% endif %}
+					</div>
+					{% if no_call %}
+						<div id="no_call-block" class="form-check mt-3 mb-2">
+							<input id="no_call" class="form-check-input" type="checkbox" name="no_call" value="1"/>
+							<label class="form-check-label" for="no_call">{{ text_no_call }}</label>
+						</div>
+					{% endif %}
+                    {% if telegram_viber_contact %}
+                        <div id="telegram_viber_contact-block" class="form-check mb-2">
+                            <input id="telegram_viber_contact" class="form-check-input" type="checkbox" name="telegram_viber_contact" value="1"/>
+                            <label class="form-check-label" for="telegram_viber_contact">{{ text_telegram_viber_contact }}</label>
+                        </div>
+                    {% endif %}
+					{% if text_agree %}
+						<div id="agree-block" class="form-check mb-3">
+							{% if agree %}
+								<input id="checkoutCheckbox" class="form-check-input" type="checkbox" name="agree" value="1" checked="checked"/>
+							{% else %}
+								<input id="checkoutCheckbox" class="form-check-input" type="checkbox" name="agree" value="1"/>
+							{% endif %}
+							<label class="form-check-label" for="checkoutCheckbox">{{ text_agree }}</label>
+						</div>
+					{% endif %}
+					<div class="oct-fastorder-payment">
+						{% if payment and payment %}
+							<p>{{ payment }}</p>
+						{% else %}
+							<button type="button" class="rm-btn primary w-100" id="button-go">
+								<span class="rm-btn-text">{{ button_checkout }}</span>
+							</button>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+
+            <script>
+                const stickyColumn = document.querySelector('.ds-sticky-column'),
+                      header = document.querySelector('header'),
+                      headerHeight = header.offsetHeight + 20;
+
+                document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', function() { stickyColumn.style.top = headerHeight + 'px'; }) : stickyColumn.style.top = headerHeight + 'px';
+            </script>
+		</div>
+	</main>
+</div>
+{{ content_bottom }}
+{% if phone_mask %}
+<script>
+    $('#telephone').inputmask({
+        mask: '{{ phone_mask }}',
+        clearMaskOnLostFocus: false
+    });
+</script>
+{% endif %}
+<script>
+
+    function scrollToItem(elementId, shipping = false) {
+        const element = document.querySelector(elementId);
+
+        if (element) {
+            if (shipping) {
+                element.scrollIntoView({behavior: 'smooth', block: 'start', inline: 'nearest'});
+                return;
+            }
+            const rect = element.getBoundingClientRect();
+
+            window.scrollTo({
+                top: rect.top + window.scrollY - (window.innerHeight / 2),
+                behavior: 'smooth'
+            });
+        }
+    }
+
+    function scrollToFreeShipping() {
+        scrollToItem('#oct-shipping-block', true);
+    }
+
+    function addToCartFromCheckout(product_id, quantity = 1) {
+        update(product_id, 'add');
+    }
+
+    function formChangeData() {
+        $.ajax({
+            url: 'index.php?route=checkout/oct_smartcheckout/formDataChange',
+            type: 'post',
+            data: $('.oct-checkout input[type=\'text\'], .oct-checkout input[type=\'tel\'], .oct-checkout input[type=\'date\'], .oct-checkout input[type=\'datetime-local\'], .oct-checkout input[type=\'time\'], .oct-checkout input[type=\'password\'], .oct-checkout input[type=\'hidden\'], .oct-checkout input[type=\'checkbox\']:checked, .oct-checkout input[type=\'radio\']:checked, .oct-checkout textarea, .oct-checkout select').serialize(),
+            dataType: 'json',
+            beforeSend: function () {
+                $('#button-go').button('loading');
+                masked('body', true);
+            },
+            complete: function () {
+                $('#button-go').button('reset');
+                masked('body', false);
+            },
+            success: function (json) {
+                if (!json.html.error) {
+
+                    if (json.html.recommended_poducts) {
+                        $('#recommended_block').html(json.html.recommended_poducts);
+                    } 
+
+                    $('#oct-shipping-block').html(json.html.shipping_block);
+                    $('#oct-payment-block').html(json.html.payment_block);
+                    $('#customer-fields-block').html(json.html.customer_fields);
+                    $('#country-zone-fields-block').html(json.html.countryzone_fields);
+                    $('#customer_address_fields').html(json.html.customer_address_fields);
+                    $('#cart-table').html(json.html.cart);
+
+                    let payment_fields = json.html.payment_fields;
+
+                    if (payment_fields) {
+                        $('#payment-fields').html(payment_fields);
+                    }
+
+                    if (!json.html.countryzone_fields) {
+                        $('#country-zone-fields-block').hide();
+                    } else {
+                        $('#country-zone-fields-block').show();
+                    }
+
+                    if (!json.html.customer_address_fields) {
+                        $('#customer_address_fields').hide();
+                    } else {
+                        $('#customer_address_fields').show();
+                    }
+
+                    if (!json.html.recommended_poducts) {
+                        $('#recommended_block').hide();
+                    } else {
+                        $('#recommended_block').show();
+                    }
+
+                    {% if phone_mask %}
+                        $('#telephone').inputmask({
+                            mask: '{{ phone_mask }}',
+                            clearMaskOnLostFocus: false
+                        });
+                    {% endif %}
+                } else {
+                    location = json.html.redirect;
+                }
+                masked('body', false);
+
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.error('error');
+            }
+        });
+    }
+
+    function update(target, status) {
+        let input_val  = $(target).parent().parent().children('input[name=quantity]').val(),
+            quantity   = parseInt(input_val),
+            product_id  = $(target).parent().parent().parent().children('input[name=product_id]').val(),
+            product_id_q = $(target).parent().parent().parent().children('input[name=product_id_q]').val(),
+            product_key = $(target).parent().parent().find('input[name=product_id]').val(),
+            urls     = null;
+
+        if (quantity <= 0) {
+            quantity = $(target).parent().parent().children('input[name=quantity]').val(1);
+            return;
+        }
+
+        if (status == 'update') {
+            urls = 'index.php?route=checkout/oct_smartcheckout/shoppingCart&update=' + product_id + '&quantity=' + quantity;
+        } else if (status == 'add') {
+            urls = 'index.php?route=checkout/oct_smartcheckout/shoppingCart&add=' + target + '&quantity=1';
+        } else {
+            urls = 'index.php?route=checkout/oct_smartcheckout/shoppingCart&remove=' + product_key;
+        }
+
+        $.ajax({
+            url: urls,
+            type: 'get',
+            dataType: 'html',
+            success: function(data) {
+            $.ajax({
+                url: 'index.php?route=checkout/oct_smartcheckout/statusCart',
+                type: 'get',
+                dataType: 'json',
+                success: function(json) {
+                    if (json['total']) {
+                        setTimeout(function () {
+                            $('#cart .rm-header-cart-quantity, .oct-fixed-bar-quantity-cart').html(json['total']);
+
+                        }, 100);
+                    }
+                    if (!json['redirect']) {
+                        formChangeData();
+                    } else {
+                        location = json['redirect'];
+                    }
+                }
+            });
+            }
+        });
+    }
+
+    function update_manual(target, product_id, operation = false) {
+        let input_val = $(target).val(),
+            quantity = parseInt(input_val);
+
+        if (operation === 'plus') {
+            quantity += 1;
+        } else if (operation === 'minus') {
+            quantity -= 1;
+        }
+
+        $(target).val(quantity);
+
+        if (quantity <= 0 || isNaN(quantity)) {
+            quantity = $(target).val(1);
+            return;
+        }
+
+        $.ajax({
+            url: 'index.php?route=checkout/oct_smartcheckout/shoppingCart&update=' + product_id + '&quantity=' + quantity,
+            type: 'get',
+            dataType: 'html',
+            success: function(data) {
+                $.ajax({
+                    url: 'index.php?route=checkout/oct_smartcheckout/statusCart',
+                    type: 'get',
+                    dataType: 'json',
+                    success: function(json) {
+                    if (json['total']) {
+                        setTimeout(function () {
+                            $('#cart .rm-header-cart-quantity, .oct-fixed-bar-quantity-cart').html(json['total']);
+                        }, 100);
+                    }
+                    if (!json['redirect']) {
+                        formChangeData();
+                    } else {
+                        location = json['redirect'];
+                    }
+                    }
+                });
+            }
+        });
+    }
+    
+    {% if not user_logged %}
+    function generatePassword() {
+        const length = document.getElementById('length').value;
+        const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+~`|}{[]:;?><,./-=";
+        let password = "";
+
+        const lowercaseLetters = "abcdefghijklmnopqrstuvwxyz";
+        const uppercaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const numbers = "0123456789";
+        const specialChars = "!@#$%^&*()_+~`|}{[]:;?><,./-=";
+
+        password += lowercaseLetters.charAt(Math.floor(Math.random() * lowercaseLetters.length));
+        password += uppercaseLetters.charAt(Math.floor(Math.random() * uppercaseLetters.length));
+        password += numbers.charAt(Math.floor(Math.random() * numbers.length));
+        password += specialChars.charAt(Math.floor(Math.random() * specialChars.length));
+
+        for (var i = password.length; i < length; i++) {
+            password += charset.charAt(Math.floor(Math.random() * charset.length));
+        }
+
+        password = shuffle(password);
+
+        document.getElementById('password').value = password;
+        updateStrengthIndicator(password);
+    }
+
+    function shuffle(string) {
+        const array = string.split('');
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array.join('');
+    }
+
+    function togglePasswordVisibility() {
+        const passwordInput = document.getElementById('password');
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+    }
+
+    function copyToClipboard() {
+        const passwordInput = document.getElementById('password');
+        const currentType = passwordInput.getAttribute('type');
+
+        passwordInput.setAttribute('type', 'text');
+        passwordInput.select();
+        document.execCommand('copy');
+
+        passwordInput.setAttribute('type', currentType);
+        rmNotify('success', '{{ text_copy_success }}');
+    }
+
+    function evaluatePasswordStrength(password) {
+        let strengthPoints = 0;
+        const diversityFactors = [
+            { regex: /[a-z]/, points: 1 }, 
+            { regex: /[A-Z]/, points: 1 },
+            { regex: /[0-9]/, points: 1 }, 
+            { regex: /[^a-zA-Z0-9]/, points: 1 } 
+        ];
+
+        diversityFactors.forEach(factor => {
+            if(factor.regex.test(password)) {
+                strengthPoints += factor.points;
+            }
+        });
+
+        const lengthPoints = Math.min(Math.floor(password.length / 4), 5); 
+        strengthPoints += lengthPoints;
+
+        return strengthPoints; 
+    }
+
+    function updateStrengthIndicator(password) {
+        const strengthPoints = evaluatePasswordStrength(password);
+        const strengthIndicator = document.getElementById('strengthIndicator');
+        let backgroundColor;
+        let width;
+        switch (true) {
+            case (strengthPoints >= 7):
+                backgroundColor = 'green';
+                width = '100%';
+                break;
+            case (strengthPoints >= 4):
+                backgroundColor = 'orange';
+                width = `${(strengthPoints / 7) * 100}%`;
+                break;
+            default:
+                backgroundColor = 'red';
+                width = `${(strengthPoints / 7) * 100}%`;
+        }
+        strengthIndicator.style.width = width;
+        strengthIndicator.style.backgroundColor = backgroundColor;
+    }
+    {% endif %}    
+    
+    {% if abandoned_module_status %}
+    function octAbandonedSave() {
+        $.ajax({
+            url: 'index.php?route=checkout/oct_smartcheckout/abandonedSave',
+            type: 'post',
+            data: $('.oct-checkout input[type=\'text\'], .oct-checkout input[type=\'tel\']').serialize(),
+            dataType: 'json',
+        });
+    }
+    $('#customer-fields-block').on('blur', 'input[type="text"], input[type="tel"]', function() {
+        if ($(this).val().trim() !== '') {
+            octAbandonedSave();
+        }
+    });
+    {% endif %}
+
+    $('#button-voucher').on('click', function() {
+        $.ajax({
+            url: 'index.php?route=checkout/oct_smartcheckout/voucher',
+            type: 'post',
+            data: 'voucher=' + encodeURIComponent($('input[name=\'voucher\']').val()),
+            dataType: 'json',
+            beforeSend: function() {
+                    masked('body', true);
+            },
+            complete: function() {
+                    masked('body', false);
+            },
+            success: function(json) {
+                $('.alert-dismissible').remove();
+
+                if (json['error']) {
+                    rmNotify('danger', json['error']);
+                }
+
+                if (json['success']) {
+                    formChangeData();
+                    rmNotify('success', json['success']);
+                }
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                console.error('error voucher');
+            }
+        });
+    });
+
+    $('#button-coupon').on('click', function() {
+        $.ajax({
+            url: 'index.php?route=checkout/oct_smartcheckout/coupon',
+            type: 'post',
+            data: 'coupon=' + encodeURIComponent($('input[name=\'coupon\']').val()),
+            dataType: 'json',
+            beforeSend: function() {
+                    masked('body', true);
+            },
+            complete: function() {
+                    masked('body', false);
+            },
+            success: function(json) {
+                $('.alert-dismissible').remove();
+
+                if (json['error']) {
+                    rmNotify('danger', json['error']);
+                }
+
+                if (json['success']) {
+                    formChangeData();
+                    rmNotify('success', json['success']);
+                }
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                console.error('error coupon');
+            }
+        });
+    });
+
+    $('#button-reward').on('click', function() {
+        $.ajax({
+            url: 'index.php?route=checkout/oct_smartcheckout/reward',
+            type: 'post',
+            data: 'reward=' + encodeURIComponent($('input[name=\'reward\']').val()),
+            dataType: 'json',
+            beforeSend: function() {
+                $('#button-reward').button('loading');
+            },
+            complete: function() {
+                $('#button-reward').button('reset');
+            },
+            success: function(json) {
+                $('.alert-dismissible').remove();
+
+                if (json['error']) {
+                    rmNotify('danger', json['error']);
+                }
+
+                if (json['success']) {
+                    formChangeData();
+                    rmNotify('success', json['success']);
+                }
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                console.error('error reward');
+            }
+        });
+    });
+
+    {% if autoselect_first_shipping %}
+    $(document).ready(function() {
+       $('input[name="shipping_method"]:first').trigger('change');
+    });
+    {% endif %}
+    
+    $(document).on('change', 'input[name="payment_method"], input[name="shipping_method"], select[name="zone_id"]', function () {
+        setTimeout(function() {
+            formChangeData();
+        }, 400);
+    });
+
+    $(document).on('change', 'select[name=\'country_id\']', function () {
+        $.ajax({
+            url: 'index.php?route=checkout/oct_smartcheckout/country&country_id=' + this.value,
+            dataType: 'json',
+            beforeSend: function () {
+                $('select[name=\'country_id\']').after(' <i class="fa fa-spinner fa-spin"></i>');
+            },
+            complete: function () {
+                $('.fa-spinner').remove();
+            },
+            success: function (json) {
+
+                html = '<option value="">{{ text_select }}</option>';
+
+                if (json['zone'] && json['zone'] != '') {
+                    for (i = 0; i < json['zone'].length; i++) {
+                        html += '<option value="' + json['zone'][i]['zone_id'] + '"';
+
+                        if (json['zone'][i]['zone_id'] ==
+                            '{{ oct_smartcheckout_data.country_and_region == 1 ? zone_id : oct_smartcheckout_data.default_region }}'
+                            ) {
+                            html += ' selected="selected"';
+                        }
+
+                        html += '>' + json['zone'][i]['name'] + '</option>';
+                    }
+                } else {
+                    html += '<option value="0" selected="selected">{{ text_none }}</option>';
+                }
+
+                {% if oct_smartcheckout_data.country_and_region == 1 or oct_smartcheckout_data.country_and_region == 2 %}
+                $('select[name=\'zone_id\']').html(html).val(''); 
+                {% else %}
+                $('select[name=\'zone_id\']').html(html);
+                $('select[name=\'zone_id\']').trigger('change'); 
+                {% endif %}
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.error('error');
+            }
+        });
+    });
+
+    let error = true;
+    $(document).on("change paste keyup", ".oct-checkout .form-control, .oct-checkout .form-check-input", function () {
+        $(this).removeClass('error_style');
+    });
+
+    document.getElementById('button-go').addEventListener('click', function () {
+        let data = $(
+            '.oct-checkout input[type=\'text\'], .oct-checkout input[type=\'tel\'], .oct-checkout input[type=\'date\'], .oct-checkout input[type=\'datetime-local\'], .oct-checkout input[type=\'time\'], .oct-checkout input[type=\'password\'], .oct-checkout input[type=\'hidden\'], .oct-checkout input[type=\'checkbox\']:checked, .oct-checkout input[type=\'radio\']:checked, .oct-checkout textarea, .oct-checkout select'
+            ).serialize();
+        data += '&_shipping_method=' + $('.oct-checkout input[name=\'shipping_method\']:checked').prop('title') +
+            '&_payment_method=' + $('.oct-checkout input[name=\'payment_method\']:checked').prop('title');
+
+        $.ajax({
+            url: 'index.php?route=checkout/oct_smartcheckout/validateForm',
+            type: 'post',
+            data: data,
+            dataType: 'json',
+            beforeSend: function () {
+                $('#button-go').button('loading');
+                masked('body', true);
+
+                $('#button-go').data('original-content', $('#button-go').html());
+			    $('#button-go').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>').prop('disabled', true);
+            },
+            complete: function () {
+                $('#button-go').button('reset');
+                masked('body', false);
+
+                setTimeout(function () {
+                    $('#button-go').html($('#button-go').data('original-content')).prop('disabled', false);
+                }, 600);
+            },
+            success: function (json) {
+                $('.register_block input, .register_block select').parent().removeClass('error_style');
+                masked('body', false);
+
+                if (json['redirect']) {
+                    location = json['redirect'];
+                } else if (json['error']) {
+
+                    error = true;
+
+                    if (json['error']['warning_agree']) {
+                        $('#checkoutCheckbox').addClass('error_style');
+                    }
+
+                    if (json['error']['shipping_warning']) {
+                        scrollToFreeShipping();
+                    }
+
+                    let errorMessages = '';
+
+                    for (let i in json['error']) {
+                        errorMessages += '<p class="mb-2">' + json['error'][i] + '</p>\n';
+                        if (document.querySelector('.oct-checkout .form-control[name="' + i + '"]')) {
+                            document.querySelector('.oct-checkout .form-control[name="' + i + '"]').classList.add('error_style');
+                        }
+                    }
+
+                    rmNotify('danger', errorMessages);
+                    scrollToItem('.error_style');
+
+                } else {
+                    error = false;
+                    $(".oct-fastorder-payment").html(json.output);
+
+                    const baseSelector = '.oct-fastorder-payment';
+                    const selectors = `${baseSelector} h2, ${baseSelector} legend, ${baseSelector} fieldset, ${baseSelector} p, ${baseSelector} form`;
+                    const clickSelectors = `${baseSelector} input[type=submit], ${baseSelector} input[type=button], ${baseSelector} button, ${baseSelector} a, ${baseSelector} .btn-primary, ${baseSelector} #button-confirm`;
+                    const timeoutDuration = 200;
+
+                    let autosubmitPayment = "{{ autosubmit_payment }}";
+                    let performClick = function() {
+                        $(clickSelectors).click();
+                    };
+
+                    if (!$(selectors).length || autosubmitPayment === "on") {
+                        $(baseSelector).after('<button type="button" class="rm-btn primary w-100" disabled><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span></button>');
+                        $(baseSelector).addClass('d-none');
+                        setTimeout(performClick, timeoutDuration);
+                    }
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.error('error');
+            }
+        });
+    });
+    
+    $(document).on('change', 'select[name="address_id"]', function () {
+        formChangeData();
+    });
+
+    $(document).on('click', '.payment-method-check-item', function (e) {
+        if (e.target.tagName !== 'INPUT') {
+            $(this).find('input').click();
+        }
+    });
+-->
+</script>
+{{ footer }}

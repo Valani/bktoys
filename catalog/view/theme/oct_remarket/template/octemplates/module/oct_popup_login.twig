@@ -1,0 +1,329 @@
+<div class="modal" id="rm-popup-login" tabindex="-1" role="dialog" aria-labelledby="loginModalTitle" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered narrow" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-title" id="loginModalTitle">{{ heading_title }}</div>
+				<button type="button" class="modal-close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true" class="modal-close-icon modal-close-left"></span>
+                    <span aria-hidden="true" class="modal-close-icon modal-close-right"></span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="rm-content-title dark-text{% if not otp_module_status %} d-none{% endif %}"><span>{{ text_choose_login }}</span></div>
+				<ul class="nav nav-tabs border-0{% if not otp_module_status %} d-none{% endif %}" id="loginTabs" role="tablist">
+					{% if otp_module_status %}
+						<li class="nav-item" role="presentation">
+							<button class="nav-link active " id="otp-login-tab" data-toggle="tab" data-target="#otp-login" type="button" role="tab" aria-selected="true">{{ text_otp_tab }}</button>
+						</li>
+					{% endif %}
+					<li class="nav-item" role="presentation">
+						<button class="nav-link" id="email-login-tab" data-toggle="tab" data-target="#email-login" type="button" role="tab" aria-selected="{% if otp_module_status %}false{% else %}true{% endif %}">{{ text_email_tab }}</button>
+					</li>
+				</ul>
+				<div class="tab-content{% if otp_module_status %} tab-content-otp{% endif %}" id="loginTabsContent">
+					{% if otp_module_status %}
+						<div class="tab-pane fade show active" id="otp-login" role="tabpanel" aria-labelledby="otp-login-tab">
+							<div class="light-text fsz-14 py-4">{{ text_entry_telephone }}</div>
+							<div id="otp-alert" style="display: none;" class="fsz-14 alert" role="alert"></div>
+							<form id="otp-form-telephone">
+								<div class="input-group mb-4">
+									<input type="tel" name="telephone" value="{{ telephone }}" class="form-control" id="input-telephone" placeholder="{{ entry_telephone }}" inputmode="tel" aria-label="telephone" aria-describedby="phoneCallbackIcon">
+									<input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+								</div>
+								<button type="button" id="button-send-otp" class="rm-btn primary d-flex align-items-center justify-content-center">{{ button_send_otp }}</button>
+							</form>
+
+							<form id="otp-form-code" style="display: none;">
+								<div class="mb-4">
+									<label for="input-otp" class="form-label">{{ entry_otp }}</label>
+									<input type="text" name="otp_code" placeholder="{{ entry_otp }}" id="input-otp" class="form-control"/>
+								</div>
+								<button type="button" id="button-verify-otp" class="rm-btn primary d-flex align-items-center justify-content-center w-100">{{ button_verify_otp }}</button>
+								<button type="button" id="button-resend-otp" class="rm-btn dark mt-4 mx-0 w-100">{{ button_resend_otp }}</button>
+								<div class="rm-cart-block border-0 mt-4 mb-0 pb-0">
+									<div class="rm-content-title rm-cart-block-title d-flex align-items-center justify-content-between justify-content-md-start">
+										<span>{{ text_otp_not_received }}</span>
+									</div>
+									<div class="rm-cart-block-row pt-0 fsz-14">
+										<p class="py-4 mb-0">{{ text_otp_not_sent }}</p>
+										<div class="p-3 br-8 otp-code-block">{{ text_otp_not_sent_list }}</div>
+									</div>
+								</div>
+							</form>
+							<input type="hidden" id="saved-telephone" value=""/>
+							<input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+						</div>
+						<script>
+							$('.rm-cart-block-title').on('click', function (e) {
+								$(this).toggleClass('clicked');
+								$(this).next().toggleClass('opened');
+							});
+						</script>
+					{% endif %}
+					<div class="tab-pane fade{% if not otp_module_status %} show active{% endif %}" id="email-login" role="tabpanel" aria-labelledby="email-login-tab">
+						<form method="post" enctype="multipart/form-data" id="popup-login-form">
+							<div class="form-group mt-3">
+								<label class="rm-control-label" for="emailLoginInput"><span class="required">* </span>{{ entry_email }}</label>
+								<input type="email" class="form-control" id="emailLoginInput" aria-describedby="emailHelp" placeholder="{{ entry_email }}" name="email" />
+							</div>
+							<div class="form-group">
+								<label class="rm-control-label" for="passwordLoginInput"><span class="required">* </span>{{ entry_password }}</label>
+								<input type="password" class="form-control" id="passwordLoginInput" placeholder="{{ entry_password }}" name="password" />
+								{% if redirect %}
+								<input type="hidden" name="redirect" value="{{ redirect }}" />
+								{% endif %}
+								<input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+							</div>
+							<div class="login-popup-links d-flex align-items-center justify-content-between">
+								<a class="login-popup-forgotten" href="{{ forgotten_url }}">{{ button_forgotten }}</a>
+								<a class="login-popup-register" href="{{ register_url }}">{{ button_register }}</a>
+							</div>
+							<button id="popup-login-button" type="button" class="rm-btn dark">{{ button_login }}</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+$('#popup-login-button').on('click', function() {
+    $.ajax({
+		type: 'post',
+		url:  'index.php?route=octemplates/module/oct_popup_login/login',
+		dataType: 'json',
+		cache: false,
+		data: $('#popup-login-form').serialize(),
+		beforeSend: function() {
+			masked('body', true);
+
+			$('#popup-login-button').data('original-content', $('#popup-login-button').html());
+			$('#popup-login-button').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>').prop('disabled', true);
+		},
+		complete: function() {
+			masked('body', false);
+
+			setTimeout(function () {
+				$('#popup-login-button').html($('#popup-login-button').data('original-content')).prop('disabled', false);
+			}, 600);
+		},
+		success: function(json) {
+	        if (json['warning']) {
+				rmNotify('danger', json['warning']);
+	        } else {
+
+				if (json['redirect']) {
+					location = json['redirect'];
+				} else {
+					location = '{{ account_url }}';
+				}
+	        }
+	    }
+    });
+});
+</script>
+{% if otp_module_status %}
+	<!-- OTP Modal Scripts -->
+	<script>
+		$(document).ready(function () {
+			var otpModal = $('#otpModal');
+			var otpAlert = $('#otp-alert');
+			var otpFormTelephone = $('#otp-form-telephone');
+			var otpFormCode = $('#otp-form-code');
+			var buttonSendOtp = $('#button-send-otp');
+			var buttonVerifyOtp = $('#button-verify-otp');
+			var buttonResendOtp = $('#button-resend-otp');
+
+			otpFormCode.on('submit', function (e) {
+				e.preventDefault();
+				buttonVerifyOtp.trigger('click');
+			});
+
+			var currentUrl = window.location.href;
+
+			$('#input-telephone').on('keydown', function (e) {
+				if (e.key === 'Enter') {
+					e.preventDefault();
+					buttonSendOtp.trigger('click');
+				}
+			});
+
+			function showAlert(type, message) {
+				otpAlert.removeClass('alert-success alert-danger').addClass(type);
+				otpAlert.html(message);
+				otpAlert.show();
+			}
+
+			buttonSendOtp.on('click', function () {
+				var telephone = $('#input-telephone').val();
+				var csrfToken = $('input[name="csrf_token"]').val();
+
+				$.ajax({
+					url: '{{ action_send_otp }}',
+					type: 'post',
+					data: {
+						telephone: telephone,
+						csrf_token: csrfToken,
+						redirect: currentUrl
+					},
+					dataType: 'json',
+					headers: {
+						'Cache-Control': 'no-cache'
+					},
+					beforeSend: function () {
+						buttonSendOtp.prop('disabled', true);
+						masked('body', true);
+
+						$('#button-send-otp').data('original-content', $('#button-send-otp').html());
+						$('#button-send-otp').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>').prop('disabled', true);
+					},
+					complete: function () {
+						buttonSendOtp.prop('disabled', false);
+						masked('body', false);
+
+						setTimeout(function () {
+							$('#button-send-otp').html($('#button-send-otp').data('original-content')).prop('disabled', false);
+						}, 600);
+					},
+					success: function (json) {
+						if (json['success']) {
+							showAlert('alert-success', json['message']);
+							$('#saved-telephone').val(telephone);
+							otpFormTelephone.hide();
+							otpFormCode.show();
+						} else if (json['error']) {
+							showAlert('alert-danger', json['error']);
+							if (json['otp_throttle']) {
+								$('#saved-telephone').val(telephone);
+								otpFormTelephone.hide();
+								otpFormCode.show();
+							}
+						}
+					},
+					error: function (xhr, ajaxOptions, thrownError) {
+					console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+					}
+				});
+			});
+
+			buttonVerifyOtp.on('click', function () {
+				var otpCode = $('#input-otp').val();
+				var csrfToken = $('input[name="csrf_token"]').val();
+
+				$.ajax({
+					url: '{{ action_verify_otp }}',
+					type: 'post',
+					data: {
+						otp_code: otpCode,
+						csrf_token: csrfToken
+					},
+					dataType: 'json',
+					cache: false,
+					headers: {
+						'Cache-Control': 'no-cache'
+					},
+					beforeSend: function () {
+						buttonVerifyOtp.prop('disabled', true);
+						masked('body', true);
+
+						$('#button-verify-otp').data('original-content', $('#button-verify-otp').html());
+						$('#button-verify-otp').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>').prop('disabled', true);
+					},
+					complete: function () {
+						buttonVerifyOtp.prop('disabled', false);
+						masked('body', false);
+
+						setTimeout(function () {
+							$('#button-verify-otp').html($('#button-verify-otp').data('original-content')).prop('disabled', false);
+						}, 600);
+					},
+					success: function (json) {
+						if (json['success']) {
+							showAlert('alert-success', json['message']);
+							setTimeout(function () {
+								otpModal.modal('hide');
+								if (json['redirect']) {
+									window.location.href = json['redirect'];
+								} else {
+									location.reload();
+								}
+							}, 1200);
+						} else if (json['error']) {
+						showAlert('alert-danger', json['error']);
+							if (json['max_attempts_exceeded']) {
+								otpFormCode.hide();
+								otpFormTelephone.show();
+							} else {
+								otpFormTelephone.hide();
+								otpFormCode.show();
+							}
+						}
+					},
+					error: function (xhr, ajaxOptions, thrownError) {
+					console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+					}
+				});
+			});
+
+			buttonResendOtp.on('click', function () {
+				var telephone = $('#saved-telephone').val();
+				var csrfToken = $('input[name="csrf_token"]').val();
+
+				if (! telephone) {
+					showAlert('alert-danger', '{{ error_telephone }}');
+					otpFormTelephone.show();
+					otpFormCode.hide();
+					return;
+				}
+
+				$.ajax({
+					url: '{{ action_send_otp }}',
+					type: 'post',
+					data: {
+						telephone: telephone,
+						csrf_token: csrfToken,
+						redirect: currentUrl
+					},
+					dataType: 'json',
+					headers: {
+						'Cache-Control': 'no-cache'
+					},
+					beforeSend: function () {
+						buttonResendOtp.prop('disabled', true);
+						masked('body', true);
+
+						$('#button-resend-otp').data('original-content', $('#button-resend-otp').html());
+						$('#button-resend-otp').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>').prop('disabled', true);
+					},
+					complete: function () {
+						buttonResendOtp.prop('disabled', false);
+						masked('body', false);
+
+						setTimeout(function () {
+							$('#button-resend-otp').html($('#button-resend-otp').data('original-content')).prop('disabled', false);
+						}, 600);
+					},
+					success: function (json) {
+						if (json['success']) {
+							showAlert('alert-success', json['message']);
+						} else if (json['error']) {
+							showAlert('alert-danger', json['error']);
+						}
+					},
+					error: function (xhr, ajaxOptions, thrownError) {
+					console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+					}
+				});
+			});
+		});
+	</script>
+	{% if mask is defined and mask is not empty %}
+		<script src="catalog/view/theme/oct_remarket/js/jquery.inputmask.bundle.min.js"></script>
+		<script>
+			$('#rm-popup-login #input-telephone').inputmask({
+				mask: '{{ mask }}',
+				clearMaskOnLostFocus: false
+			});
+		</script>
+	{% endif %}
+{% endif %}

@@ -1,0 +1,615 @@
+{{ header }}{{ column_left }}
+<div id="content">
+    <div class="page-header">
+      <div class="container-fluid">
+        <div class="pull-right">
+          <button type="submit" form="form-module" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+          <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+        </div>
+        <h1>{{ heading_title }}</h1>
+        <ul class="breadcrumb">
+          {% for breadcrumb in breadcrumbs %}
+            <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  <div class="container-fluid">
+    {% if error_warning %}
+        <script>
+            usNotify('danger', '{{ error_warning }}');
+        </script>
+    {% endif %}
+    {% if success %}
+        <script>
+            usNotify('success', '{{ success }}');
+        </script>
+    {% endif %}
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+        </div>
+      <div class="panel-body">
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-module" class="form-horizontal">
+          <ul class="nav nav-tabs">
+            <li class="active">
+             <a href="#tab-general" class="nav-link active" data-toggle="tab">{{ tab_general }}</a>
+            </li>
+            <li>
+              <a href="#tab-settings" class="nav-link" data-toggle="tab">{{ tab_settings }}</a>
+            </li>
+            <li>
+              <a href="#tab-templates" class="nav-link" data-toggle="tab">{{ tab_templates }}</a>
+            </li>
+            <li>
+              <a href="#tab-logs" class="nav-link" data-toggle="tab">{{ tab_logs }}</a>
+            </li>
+          </ul>
+          <div class="tab-content">
+            <!-- General Tab -->
+            <div class="tab-pane active" id="tab-general">
+              <!-- Module Status -->
+              <div class="form-group{% if error_status %} has-error{% endif %}">
+                <label class="col-sm-2 control-label" for="input-status">{{ entry_status }}</label>
+                <div class="col-sm-10">
+                  <div class="toggle-group">
+                    <input type="checkbox" name="oct_sms_settings[status]" {% if oct_sms_settings.status %}checked="checked"{% endif %} id="status" tabindex="1">
+                    <label for="status"></label>
+                    <div class="onoffswitch pull-left" aria-hidden="true">
+                      <div class="onoffswitch-label">
+                        <div class="onoffswitch-inner"></div>
+                        <div class="onoffswitch-switch"></div>
+                      </div>
+                    </div>
+                  </div>
+                  {% if error_status %}
+                    <div class="text-danger">{{ error_status }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <input type="hidden" name="oct_sms_settings[oct_sms_token]" value="{{ oct_sms_settings.oct_sms_token }}" />
+              <div id="general_settings" {% if not oct_sms_settings.status %}style="display:none"{% endif %}>
+                <!-- Translit status -->
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-translit">{{ entry_translit }}</label>
+                  <div class="col-sm-10">
+                    <div class="toggle-group">
+                      <input type="checkbox" name="oct_sms_settings[translit]" {% if oct_sms_settings.translit %}checked="checked"{% endif %} id="translit" tabindex="1">
+                      <label for="translit"></label>
+                      <div class="onoffswitch pull-left" aria-hidden="true">
+                        <div class="onoffswitch-label">
+                          <div class="onoffswitch-inner"></div>
+                          <div class="onoffswitch-switch"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <span class="help-block">{{ help_translit }}</span>
+                  </div>
+                </div>
+                <!-- logging status -->
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-logging">{{ entry_logging }}</label>
+                  <div class="col-sm-10">
+                    <div class="toggle-group">
+                      <input type="checkbox" name="oct_sms_settings[logging]" {% if oct_sms_settings.logging %}checked="checked"{% endif %} id="logging" tabindex="1">
+                      <label for="logging"></label>
+                      <div class="onoffswitch pull-left" aria-hidden="true">
+                        <div class="onoffswitch-label">
+                          <div class="onoffswitch-inner"></div>
+                          <div class="onoffswitch-switch"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <span class="help-block">{{ help_logging }}</span>
+                  </div>
+                </div>
+                <div class="required form-group{% if error_sender_name %} has-error{% endif %}">
+                  <label class="col-sm-2 control-label" for="input-sender-name">{{ entry_sender_name }}</label>
+                  <div class="col-sm-10">
+                    <input type="text" name="oct_sms_settings[sender_name]" value="{{ oct_sms_settings.sender_name }}" placeholder="{{ entry_sender_name }}" id="input-sender-name" class="form-control" />
+                    {% if error_sender_name %}
+                      <script>
+                          usNotify('danger', '{{ error_sender_name }}');
+                      </script>
+                      <div class="text-danger">{{ error_sender_name }}</div>
+                    {% endif %}
+                    <span class="help-block">{{ help_sender_name }}</span>
+                  </div>
+                </div>
+                <div class="required form-group{% if error_admin_phone %} has-error{% endif %}">
+                  <label class="col-sm-2 control-label" for="input-admin-phone">{{ entry_admin_phone }}</label>
+                  <div class="col-sm-10">
+                    <input type="text" name="oct_sms_settings[admin_phone]" value="{{ oct_sms_settings.admin_phone }}" placeholder="{{ entry_admin_phone }}" id="input-admin-phone" class="form-control" />
+                    {% if error_admin_phone %}
+                      <script>
+                          usNotify('danger', '{{ error_admin_phone }}');
+                      </script>
+                      <div class="text-danger">{{ error_admin_phone }}</div>
+                    {% endif %}
+                    <span class="help-block">{{ help_admin_phone }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Settings Tab -->
+            <div class="tab-pane" id="tab-settings">
+              <!-- Provider Selection -->
+              <div class="required form-group{% if error_provider %} has-error{% endif %}">
+                <label class="col-sm-2 control-label" for="input-provider">{{ entry_provider }}</label>
+                <div class="col-sm-10">
+                  <select name="oct_sms_settings[provider]" id="input-provider" class="form-control">
+                    <option value="">{{ text_select_provider }}</option>
+                    <option value="turbosms" {% if oct_sms_settings.provider == 'turbosms' %}selected{% endif %}>TurboSMS</option>
+                    <option value="alphasms" {% if oct_sms_settings.provider == 'alphasms' %}selected{% endif %}>AlphaSMS</option>
+                  </select>
+                  {% if error_provider %}
+                    <script>
+                        usNotify('danger', '{{ error_provider }}');
+                    </script>
+                    <div class="text-danger">{{ error_provider }}</div>
+                  {% endif %}
+                  <span class="help-block">{{ help_provider }}</span>
+                </div>
+              </div>
+              <!-- TurboSMS Settings -->
+              <div id="turbosms-settings" style="{% if oct_sms_settings.provider != 'turbosms' %}display:none;{% endif %}">
+                <h4>{{ text_turbosms_settings }}</h4>
+                <!-- TurboSMS Token -->
+                <div class="required form-group{% if error_turbosms_token %} has-error{% endif %}">
+                  <label class="col-sm-2 control-label" for="input-turbosms-token">{{ entry_turbosms_token }}</label>
+                  <div class="col-sm-10">
+                    <input type="text" name="oct_sms_settings[turbosms][token]" value="{{ oct_sms_settings.turbosms.token }}" placeholder="{{ entry_turbosms_token }}" id="input-turbosms-token" class="form-control" />
+                    {% if error_turbosms_token %}
+                        <script>
+                            usNotify('danger', '{{ error_turbosms_token }}');
+                        </script>
+                        <div class="text-danger">{{ error_turbosms_token }}</div>
+                    {% endif %}
+                    <span class="help-block">{{ help_turbosms_token }}</span>
+                  </div>
+                </div>
+                <!-- Hybrid Sending Toggle -->
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">{{ entry_turbosms_hybrid }}</label>
+                  <div class="col-sm-10">
+                    <div class="toggle-group">
+                      <input type="checkbox" name="oct_sms_settings[turbosms][hybrid_sending]" {% if oct_sms_settings.turbosms.hybrid_sending %}checked="checked"{% endif %} id="turbosms_hybrid" tabindex="1">
+                      <label for="turbosms_hybrid"></label>
+                      <div class="onoffswitch pull-left" aria-hidden="true">
+                        <div class="onoffswitch-label">
+                          <div class="onoffswitch-inner"></div>
+                          <div class="onoffswitch-switch"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <span class="help-block">{{ help_turbosms_hybrid }}</span>
+                  </div>
+                </div>
+                <!-- Viber Sender for TurboSMS -->
+                <div id="turbosms-viber-sender-container" style="display: none;">
+                  <div class="required form-group{% if error_turbosms_viber_sender %} has-error{% endif %}">
+                    <label class="col-sm-2 control-label" for="input-turbosms-viber-sender">{{ entry_viber_sender }}</label>
+                    <div class="col-sm-10">
+                      <input type="text" name="oct_sms_settings[turbosms][viber_sender]" value="{{ oct_sms_settings.turbosms.viber_sender }}" placeholder="{{ entry_viber_sender }}" id="input-turbosms-viber-sender" class="form-control" />
+                      {% if error_turbosms_viber_sender %}
+                        <script>
+                            usNotify('danger', '{{ error_turbosms_viber_sender }}');
+                        </script>
+                        <div class="text-danger">{{ error_turbosms_viber_sender }}</div>
+                      {% endif %}
+                      <span class="help-block">{{ help_viber_sender }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- AlphaSMS Settings -->
+              <div id="alphasms-settings" style="{% if oct_sms_settings.provider != 'alphasms' %}display:none;{% endif %}">
+                <h4>{{ text_alphasms_settings }}</h4>
+                <!-- AlphaSMS API Key -->
+                <div class="required form-group{% if error_alphasms_api_key %} has-error{% endif %}">
+                  <label class="col-sm-2 control-label" for="input-alphasms-api-key">{{ entry_alphasms_api_key }}</label>
+                  <div class="col-sm-10">
+                    <input type="text" name="oct_sms_settings[alphasms][api_key]" value="{{ oct_sms_settings.alphasms.api_key }}" placeholder="{{ entry_alphasms_api_key }}" id="input-alphasms-api-key" class="form-control" />
+                    {% if error_alphasms_api_key %}
+                        <script>
+                            usNotify('danger', '{{ error_alphasms_api_key }}');
+                        </script>
+                        <div class="text-danger">{{ error_alphasms_api_key }}</div>
+                    {% endif %}
+                    <span class="help-block">{{ help_alphasm_api_key }}</span>
+                  </div>
+                </div>
+                <!-- Hybrid Sending Toggle -->
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">{{ entry_alphasms_hybrid }}</label>
+                  <div class="col-sm-10">
+                    <div class="toggle-group">
+                      <input type="checkbox" name="oct_sms_settings[alphasms][hybrid_sending]" {% if oct_sms_settings.alphasms.hybrid_sending %}checked="checked"{% endif %} id="alphasms_hybrid" tabindex="1">
+                      <label for="alphasms_hybrid"></label>
+                      <div class="onoffswitch pull-left" aria-hidden="true">
+                        <div class="onoffswitch-label">
+                          <div class="onoffswitch-inner"></div>
+                          <div class="onoffswitch-switch"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <span class="help-block">{{ help_alphasm_hybrid }}</span>
+                  </div>
+                </div>
+                <!-- Viber Sender for AlphaSMS -->
+                <div id="alphasms-viber-sender-container" style="display: none;">
+                  <div class="required form-group{% if error_alphasms_viber_sender %} has-error{% endif %}">
+                    <label class="col-sm-2 control-label" for="input-alphasms-viber-sender">{{ entry_viber_sender }}</label>
+                    <div class="col-sm-10">
+                      <input type="text" name="oct_sms_settings[alphasms][viber_sender]" value="{{ oct_sms_settings.alphasms.viber_sender }}" placeholder="{{ entry_viber_sender }}" id="input-alphasms-viber-sender" class="form-control" />
+                      {% if error_alphasms_viber_sender %}
+                        <script>
+                            usNotify('danger', '{{ error_alphasms_viber_sender }}');
+                        </script>
+                        <div class="text-danger">{{ error_alphasms_viber_sender }}</div>
+                      {% endif %}
+                    <span class="help-block">{{ help_alphasm_viber_sender }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Templates Tab -->
+            <div class="tab-pane" id="tab-templates">
+              <!-- SMS Templates -->
+              
+
+              {% set templates = templates %}
+              <div class="col-lg-3">
+                <ul class="nav nav-pills nav-stacked mb-3" id="template-tabs">
+                  {% for template in templates %}
+                    <li{% if loop.first %} class="active"{% endif %}>
+                      <a href="#template_{{ template.code }}" data-toggle="tab">{{ template.name }}</a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+              <div class="col-lg-9">
+                <div class="tab-content">
+                  {% for template in templates %}
+                    <div class="tab-pane{% if loop.first %} active{% endif %}" id="template_{{ template.code }}">
+                      <h2>{{ template.name }}</h2>
+                      <hr />
+                      <p>{{ template.description }}</p>
+
+                      {% if template.templates is defined %}
+                        {% for subtemplate in template.templates %}
+                          <h3 class="text-info">{{ subtemplate.name }}</h3>
+                          <p>{{ subtemplate.description }}</p>
+
+                          <!-- Template Status Toggle -->
+                          <div class="form-group">
+                            <label class="col-sm-2 control-label">{{ entry_template_status }}</label>
+                            <div class="col-sm-10">
+                              <div class="toggle-group">
+                                <input type="checkbox" name="oct_sms_settings[templates][{{ subtemplate.code }}][status]" {% if oct_sms_settings.templates[subtemplate.code].status %}checked="checked"{% endif %} id="status_{{ subtemplate.code }}" tabindex="1">
+                                <label for="status_{{ subtemplate.code }}"></label>
+                                <div class="onoffswitch pull-left" aria-hidden="true">
+                                  <div class="onoffswitch-label">
+                                    <div class="onoffswitch-inner"></div>
+                                    <div class="onoffswitch-switch"></div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Edit Localization Toggle -->
+                          <div class="form-group">
+                            <label class="col-sm-2 control-label">{{ entry_edit_localization }}</label>
+                            <div class="col-sm-10">
+                              <div class="toggle-group">
+                                <input type="checkbox" name="oct_sms_settings[templates][{{ subtemplate.code }}][edit_localization]" {% if oct_sms_settings.templates[subtemplate.code].edit_localization %}checked="checked"{% endif %} id="edit_localization_{{ subtemplate.code }}" tabindex="1">
+                                <label for="edit_localization_{{ subtemplate.code }}"></label>
+                                <div class="onoffswitch pull-left" aria-hidden="true">
+                                  <div class="onoffswitch-label">
+                                    <div class="onoffswitch-inner"></div>
+                                    <div class="onoffswitch-switch"></div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Hidden Template Code -->
+                          <input type="hidden" name="oct_sms_settings[templates][{{ subtemplate.code }}][code]" value="{{ subtemplate.code }}" />
+
+                          <!-- Localization Tabs for Subtemplate -->
+                          <div id="localization_container_{{ subtemplate.code }}">
+                            <ul class="nav nav-tabs" id="language_{{ subtemplate.code }}">
+                              {% for language in languages %}
+                                <li{% if loop.first %} class="active"{% endif %}>
+                                  <a href="#language_{{ subtemplate.code }}_{{ language.language_id }}" data-toggle="tab">
+                                    <img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /> {{ language.name }}
+                                  </a>
+                                </li>
+                              {% endfor %}
+                            </ul>
+                            <div class="tab-content">
+                              {% for language in languages %}
+                                <div class="tab-pane{% if loop.first %} active{% endif %}" id="language_{{ subtemplate.code }}_{{ language.language_id }}">
+                                  <div class="form-group">
+                                    <div class="col-sm-2 text-right"><p>{{ subtemplate.shortcodes }}</p></div>
+                                    <div class="col-sm-10">
+                                      <textarea name="oct_sms_settings[templates][{{ subtemplate.code }}][message][{{ language.language_id }}]" rows="5" class="form-control">{{ oct_sms_settings.templates[subtemplate.code].message[language.language_id] }}</textarea>
+                                    </div>
+                                  </div>
+                                </div>
+                              {% endfor %}
+                            </div>
+                          </div>
+                          <hr />
+                        {% endfor %}
+                      {% else %}
+                        <!-- Template Status Toggle -->
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label">{{ entry_template_status }}</label>
+                          <div class="col-sm-10">
+                            <div class="toggle-group">
+                              <input type="checkbox" name="oct_sms_settings[templates][{{ template.code }}][status]" {% if oct_sms_settings.templates[template.code].status %}checked="checked"{% endif %} id="status_{{ template.code }}" tabindex="1">
+                              <label for="status_{{ template.code }}"></label>
+                              <div class="onoffswitch pull-left" aria-hidden="true">
+                                <div class="onoffswitch-label">
+                                  <div class="onoffswitch-inner"></div>
+                                  <div class="onoffswitch-switch"></div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Edit Localization Toggle -->
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label">{{ entry_edit_localization }}</label>
+                          <div class="col-sm-10">
+                            <div class="toggle-group">
+                              <input type="checkbox" name="oct_sms_settings[templates][{{ template.code }}][edit_localization]" {% if oct_sms_settings.templates[template.code].edit_localization %}checked="checked"{% endif %} id="edit_localization_{{ template.code }}" tabindex="1">
+                              <label for="edit_localization_{{ template.code }}"></label>
+                              <div class="onoffswitch pull-left" aria-hidden="true">
+                                <div class="onoffswitch-label">
+                                  <div class="onoffswitch-inner"></div>
+                                  <div class="onoffswitch-switch"></div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Hidden Template Code -->
+                        <input type="hidden" name="oct_sms_settings[templates][{{ template.code }}][code]" value="{{ template.code }}" />
+
+                        <!-- Localization Tabs for Client/Admin -->
+                        <div id="localization_container_{{ template.code }}" style="display: none;">
+                          <ul class="nav nav-tabs" id="language_{{ template.code }}">
+                            {% for language in languages %}
+                              <li{% if loop.first %} class="active"{% endif %}>
+                                <a href="#language_{{ template.code }}_{{ language.language_id }}" data-toggle="tab">
+                                  <img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /> {{ language.name }}
+                                </a>
+                              </li>
+                            {% endfor %}
+                          </ul>
+                          <div class="tab-content">
+                            {% for language in languages %}
+                              <div class="tab-pane{% if loop.first %} active{% endif %}" id="language_{{ template.code }}_{{ language.language_id }}">
+                                <div class="form-group">
+                                  <div class="col-sm-2 text-right"><p>{{ template.shortcodes }}</p></div>
+                                  <div class="col-sm-10">
+                                    <textarea name="oct_sms_settings[templates][{{ template.code }}][message][{{ language.language_id }}]" rows="5" class="form-control">{{ oct_sms_settings.templates[template.code].message[language.language_id] }}</textarea>
+                                  </div>
+                                </div>
+                              </div>
+                            {% endfor %}
+                          </div>
+                        </div>
+                      {% endif %}
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+            <!-- Logs Tab -->
+            <div class="tab-pane" id="tab-logs">
+                <div>
+                    <button type="button" id="button-delete-logs" data-toggle="tooltip" title="{{ button_delete_logs }}" class="btn btn-danger"><i class="fa fa-trash"></i>&nbsp;{{ button_delete_logs }}</button>
+                </div>
+                <div class="help-block" id="help-del-block" style="margin: 12px 0px;">
+                    <b>{{ help_logs }}</b>
+                </div>
+                <br />
+              <!-- Logs Table -->
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="sms-logs-table">
+                  <thead>
+                    <tr>
+                      <th>{{ column_phone }}</th>
+                      <th>{{ column_message }}</th>
+                      <th>{{ column_provider }}</th>
+                      <th>{{ column_response }}</th>
+                      <th>{{ column_template_code }}</th>
+                      <th>{{ column_date_added }}</th>
+                    </tr>
+                  </thead>
+                  <tbody id="sms-logs-body">
+                    <!-- Logs will be loaded via AJAX -->
+                  </tbody>
+                </table>
+              </div>
+              <!-- Pagination -->
+              <div class="row">
+                <div class="col-sm-6 text-left" id="sms-pagination"></div>
+                <div class="col-sm-6 text-right" id="sms-results"></div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+$(document).ready(function() {
+
+  $('#status').change(function() {
+    var $input = $(this);
+    if ($input.is(":checked")) {
+      $("#general_settings").slideDown('slow');
+    } else {
+      $("#general_settings").slideUp('slow');
+    }
+  });
+
+  $('#button-delete-logs').on('click', function() {
+      if (confirm('{{ text_confirm_delete }}')) {
+          console.log('Запит на видалення логів відправлено: ' + new Date().toISOString());
+          $.ajax({
+              url: 'index.php?route=octemplates/module/oct_sms_notify/deleteLogs&user_token={{ user_token }}',
+              dataType: 'json',
+              success: function(json) {
+                  console.log('Відповідь отримана: ' + new Date().toISOString());
+                  if (json['success']) {
+                      usNotify('success', json['success']);
+                      $('#button-delete-logs').hide();
+                      $('#help-del-block').hide();
+                  } else if (json['error']) {
+                      usNotify('warning', json['error']);
+                  }
+                  loadSmsLogs(1); // Викликається після успішного завершення AJAX-запиту
+              },
+              error: function(xhr, ajaxOptions, thrownError) {
+                  console.error(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+              }
+          });
+      }
+  });
+
+  function updateLocalizationVisibility(templateCode) {
+    if ($('#edit_localization_' + templateCode).is(':checked')) {
+      $('#localization_container_' + templateCode).show();
+    } else {
+      $('#localization_container_' + templateCode).hide();
+    }
+  }
+
+  {% for template in templates %}
+    {% if template.templates is defined %}
+      {% for subtemplate in template.templates %}
+        updateLocalizationVisibility('{{ subtemplate.code }}');
+      {% endfor %}
+    {% else %}
+      updateLocalizationVisibility('{{ template.code }}');
+    {% endif %}
+  {% endfor %}
+
+  {% for template in templates %}
+    {% if template.templates is defined %}
+      {% for subtemplate in template.templates %}
+        $('#edit_localization_{{ subtemplate.code }}').on('change', function() {
+          updateLocalizationVisibility('{{ subtemplate.code }}');
+        });
+      {% endfor %}
+    {% else %}
+      $('#edit_localization_{{ template.code }}').on('change', function() {
+        updateLocalizationVisibility('{{ template.code }}');
+      });
+    {% endif %}
+  {% endfor %}
+
+  function updateTurboSmsViberSenderVisibility() {
+    var hybridSending = $('#turbosms_hybrid').is(':checked');
+    if (hybridSending) {
+      $('#turbosms-viber-sender-container').show();
+    } else {
+      $('#turbosms-viber-sender-container').hide();
+    }
+  }
+
+  function updateAlphaSmsViberSenderVisibility() {
+    var hybridSending = $('#alphasms_hybrid').is(':checked');
+    if (hybridSending) {
+      $('#alphasms-viber-sender-container').show();
+    } else {
+      $('#alphasms-viber-sender-container').hide();
+    }
+  }
+
+  updateTurboSmsViberSenderVisibility();
+  updateAlphaSmsViberSenderVisibility();
+
+  $('#input-provider').on('change', function() {
+    if ($(this).val() == 'turbosms') {
+      $('#turbosms-settings').show();
+      $('#alphasms-settings').hide();
+    } else if ($(this).val() == 'alphasms') {
+      $('#turbosms-settings').hide();
+      $('#alphasms-settings').show();
+    } else {
+      $('#turbosms-settings').hide();
+      $('#alphasms-settings').hide();
+    }
+  });
+
+  $('#turbosms_hybrid').on('change', function() {
+    updateTurboSmsViberSenderVisibility();
+  });
+
+  $('#alphasms_hybrid').on('change', function() {
+    updateAlphaSmsViberSenderVisibility();
+  });
+
+  loadSmsLogs(1);
+
+  function loadSmsLogs(page) {
+    $.ajax({
+      url: 'index.php?route=octemplates/module/oct_sms_notify/getLogs&user_token={{ user_token }}&page=' + page,
+      dataType: 'json',
+      beforeSend: function() {
+        $('#sms-logs-body').html('<tr><td colspan="5" class="text-center"><i class="fa fa-spinner fa-spin"></i> {{ text_loading }}</td></tr>');
+      },
+      success: function(json) {
+        if (json['error']) {
+          $('#sms-logs-body').html('<tr><td colspan="5" class="text-center text-danger">' + json['error'] + '</td></tr>');
+        } else {
+          var html = '';
+
+          if (json['logs'].length) {
+            for (var i = 0; i < json['logs'].length; i++) {
+              html += '<tr>';
+              html += '  <td>' + json['logs'][i]['phone'] + '</td>';
+              html += '  <td>' + json['logs'][i]['message'] + '</td>';
+              html += '  <td>' + json['logs'][i]['provider'] + '</td>';
+              html += '  <td>' + json['logs'][i]['response'] + '</td>';
+              html += '  <td>' + json['logs'][i]['template_code'] + '</td>';
+              html += '  <td>' + json['logs'][i]['date_added'] + '</td>';
+              html += '</tr>';
+            }
+          } else {
+            html += '<tr>';
+            html += '  <td colspan="6" class="text-center">{{ text_no_results }}</td>';
+            html += '</tr>';
+            $('#button-delete-logs').hide();
+            $('#help-del-block').hide();
+          }
+
+          $('#sms-logs-body').html(html);
+          $('#sms-pagination').html(json['pagination']);
+          $('#sms-results').html(json['results']);
+
+          $('#sms-pagination .pagination a').on('click', function(e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+            var page = url.split('page=')[1];
+            loadSmsLogs(page);
+          });
+        }
+      }
+    });
+  }
+});
+</script>
+{{ footer }}

@@ -1,0 +1,404 @@
+{{ header }}{{ column_left }}
+<div id="content">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <button type="submit" form="form" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+                <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+            </div>
+            <h1>{{ heading_title }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error_warning %}
+        <script>
+            usNotify('warning', '{{ error_warning }}');
+        </script>
+        {% endif %}
+        {% if success %}
+        <script>
+            usNotify('success', '{{ success }}');
+        </script>
+        {% endif %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+            </div>
+            <div class="panel-body">
+                <ul class="nav nav-tabs" id="moduleTabs">
+                    <li class="active"><a href="#tab-settings" data-toggle="tab">{{ tab_settings }}</a></li>
+                    <li><a href="#tab-logs" data-toggle="tab">{{ tab_logs }}</a></li>
+                    <li><a href="#tab-ip-logs" data-toggle="tab">{{ tab_ip_logs }}</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="tab-settings">
+                        {% if not sms_template_status %}
+                            <div class="text-danger"><b>{{ warning_sms_template }}</b></div>
+                        {% endif %}
+                        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form" class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" for="status">{{ entry_status }}</label>
+                                <div class="col-sm-10">
+                                    <div class="toggle-group">
+                                        <input type="checkbox" name="oct_otp_login_settings[status]" value="1" {% if oct_otp_login_settings.status %}checked="checked"{% endif %} id="status" tabindex="1">
+                                        <label for="status"></label>
+                                        <div class="onoffswitch pull-left" aria-hidden="true">
+                                            <div class="onoffswitch-label">
+                                                <div class="onoffswitch-inner"></div>
+                                                <div class="onoffswitch-switch"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="all_settings" {% if not oct_otp_login_settings.status %}style="display:none"{% endif %}>
+                                <div class="form-group required">
+                                    <label class="col-sm-2 control-label" for="input-otp-length">{{ entry_otp_length }}</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" name="oct_otp_login_settings[otp_length]" value="{{ oct_otp_login_settings.otp_length }}" placeholder="{{ entry_otp_length }}" id="input-otp-length" class="form-control" />
+                                        {% if help_otp_length %}
+                                        <div class="help-block">{{ help_otp_length }}</div>
+                                        {% endif %}
+                                        {% if error_otp_length %}
+                                        <script>
+                                            usNotify('danger', '{{ error_otp_length }}');
+                                        </script>
+                                        <div class="text-danger"></div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="form-group required">
+                                    <label class="col-sm-2 control-label" for="input-otp-expiry">{{ entry_otp_expiry }}</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" name="oct_otp_login_settings[otp_expiry]" value="{{ oct_otp_login_settings.otp_expiry }}" placeholder="{{ entry_otp_expiry }}" id="input-otp-expiry" class="form-control" />
+                                        {% if help_otp_expiry %}
+                                        <div class="help-block">{{ help_otp_expiry }}</div>
+                                        {% endif %}
+                                        {% if error_otp_expiry %}
+                                        <script>
+                                            usNotify('danger', '{{ error_otp_expiry }}');
+                                        </script>
+                                        <div class="text-danger"></div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="form-group required">
+                                    <label class="col-sm-2 control-label" for="input-max-attempts">{{ entry_max_attempts }}</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" name="oct_otp_login_settings[max_attempts]" value="{{ oct_otp_login_settings.max_attempts }}" placeholder="{{ entry_max_attempts }}" id="input-max-attempts" class="form-control" />
+                                        {% if help_max_attempts %}
+                                        <div class="help-block">{{ help_max_attempts }}</div>
+                                        {% endif %}
+                                        {% if error_max_attempts %}
+                                        <script>
+                                            usNotify('danger', '{{ error_max_attempts }}');
+                                        </script>
+                                        <div class="text-danger"></div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="form-group required">
+                                    <label class="col-sm-2 control-label" for="input-lockout-time">{{ entry_lockout_time }}</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" name="oct_otp_login_settings[lockout_time]" value="{{ oct_otp_login_settings.lockout_time }}" placeholder="{{ entry_lockout_time }}" id="input-lockout-time" class="form-control" />
+                                        {% if help_lockout_time %}
+                                        <div class="help-block">{{ help_lockout_time }}</div>
+                                        {% endif %}
+                                        {% if error_lockout_time %}
+                                        <script>
+                                            usNotify('danger', '{{ error_lockout_time }}');
+                                        </script>
+                                        <div class="text-danger"></div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="form-group required">
+                                    <label class="col-sm-2 control-label" for="input-throttle-time">{{ entry_throttle_time }}</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" name="oct_otp_login_settings[throttle_time]" value="{{ oct_otp_login_settings.throttle_time }}" placeholder="{{ entry_throttle_time }}" id="input-throttle-time" class="form-control" />
+                                        {% if help_throttle_time %}
+                                        <div class="help-block">{{ help_throttle_time }}</div>
+                                        {% endif %}
+                                        {% if error_throttle_time %}
+                                        <script>danger
+                                            usNotify('danger', '{{ error_throttle_time }}');
+                                        </script>
+                                        <div class="text-danger"></div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label" for="input-phone-mask">{{ entry_phone_mask }}</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" name="oct_otp_login_settings[phone_mask]" value="{{ oct_otp_login_settings.phone_mask }}" placeholder="{{ entry_phone_mask }}" id="input-phone-mask" class="form-control" />
+                                        {% if help_phone_mask %}
+                                        <div class="help-block">{{ help_phone_mask }}</div>
+                                        {% endif %}
+                                        {% if error_phone_mask %}
+                                        <script>
+                                            usNotify('danger', '{{ error_phone_mask }}');
+                                        </script>
+                                        <div class="text-danger"></div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label" for="logging">{{ entry_logging }}</label>
+                                    <div class="col-sm-10">
+                                        <div class="toggle-group">
+                                            <input type="checkbox" name="oct_otp_login_settings[logging]" value="1" {% if oct_otp_login_settings.logging %}checked="checked"{% endif %} id="logging" tabindex="1">
+                                            <label for="logging"></label>
+                                            <div class="onoffswitch pull-left" aria-hidden="true">
+                                                <div class="onoffswitch-label">
+                                                    <div class="onoffswitch-inner"></div>
+                                                    <div class="onoffswitch-switch"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% if help_logging %}
+                                        <div class="help-block">{{ help_logging }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div> <!-- #all_settings -->
+                        </form>
+                    </div>
+                    <div class="tab-pane" id="tab-logs">
+                        <div>
+                            <button type="button" id="button-delete-logs" data-toggle="tooltip" title="{{ button_delete_logs }}" class="btn btn-danger"><i class="fa fa-trash"></i>&nbsp;{{ button_delete_logs }}</button>
+                        </div>
+                        <div class="help-block" id="help-del-block" style="margin: 12px 0px;">
+                            <b>{{ help_logs }}</b>
+                        </div>
+                        <br />
+                        <div class="table-responsive">
+                            <table id="table-logs" class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>{{ column_customer_id }}</th>
+                                        <th>{{ column_telephone }}</th>
+                                        <th>{{ column_status }}</th>
+                                        <th>{{ column_date_added }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Дані будуть завантажені через Ajax -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="logs-pagination" class="text-right"></div>
+                    </div>
+                    <div class="tab-pane" id="tab-ip-logs">
+                        <div>
+                            <button type="button" id="button-delete-ip-logs" data-toggle="tooltip" title="{{ button_delete_logs }}" class="btn btn-danger">
+                                <i class="fa fa-trash"></i>&nbsp;{{ button_delete_logs }}</button>
+                        </div>
+                        <div class="help-block" id="help-del-ip-block" style="margin: 12px 0px;">
+                            <b>{{ help_ip_logs }}</b>
+                        </div>
+                        <br/>
+                        <div class="table-responsive">
+                            <table id="table-ip-logs" class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>{{ column_ip_address }}</th>
+                                        <th>{{ column_attempt_count }}</th>
+                                        <th>{{ column_last_attempt }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Data will be loaded via Ajax -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="ip-logs-pagination" class="text-right"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#status').change(function() {
+        var $input = $(this);
+
+        if ($input.is(":checked")) {
+            $("#all_settings").slideDown('slow');
+        } else {
+            $("#all_settings").slideUp('slow');
+        }
+    });
+
+    $('a[href="#tab-logs"]').on('shown.bs.tab', function (e) {
+        loadLogs(1);
+    });
+
+    function getStatusBadge(status) {
+        let badgeClass = '';
+        let badgeText = '';
+
+        if (status === 'success') {
+            badgeClass = 'badge badge-success';
+            badgeText = 'Success';
+            badgeStyle = 'background-color: green; color: white;';
+        } else if (status === 'failure') {
+            badgeClass = 'badge badge-danger';
+            badgeText = 'Failure';
+            badgeStyle = 'background-color: red; color: white;';
+        }
+        
+        return '<span class="' + badgeClass + '" style="' + badgeStyle + '">' + badgeText + '</span>';
+    }
+
+    function loadLogs(page) {
+        $.ajax({
+            url: 'index.php?route=octemplates/module/oct_otp_login/logs&user_token={{ user_token }}&page=' + page,
+            dataType: 'json',
+            beforeSend: function() {
+                $('#table-logs tbody').html('<tr><td colspan="5" class="text-center">{{ text_loading }}</td></tr>');
+            },
+            success: function(json) {
+                if (json['logs'].length > 0) {
+                    var html = '';
+
+                    $.each(json['logs'], function(index, log) {
+                        html += '<tr>';
+                        html += '<td>' + log['customer_firstname'] + ' ' + log['customer_lastname'] + ' <br />' + log['profile_link'] + '</td>';
+                        html += '<td>' + log['telephone'] + '</td>';
+                        html += '<td>' + getStatusBadge(log['status']) + '</td>';
+                        html += '<td>' + log['date_added'] + '</td>';
+                        html += '</tr>';
+                    });
+
+                    $('#table-logs tbody').html(html);
+
+                    // Пагінація
+                    if (json['pagination']) {
+                        $('#logs-pagination').html(json['pagination']);
+                    } else {
+                        $('#logs-pagination').html('');
+                    }
+                } else {
+                    $('#table-logs tbody').html('<tr><td colspan="4" class="text-center">{{ text_no_results }}</td></tr>');
+                    $('#logs-pagination').html('');
+                    $('#button-delete-logs').hide();
+                    $('#help-del-block').hide();
+                }
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                console.error(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+            }
+        });
+    }
+
+    $('#logs-pagination').on('click', 'a', function(e) {
+        e.preventDefault();
+    
+        var url = $(this).attr('href');
+        var page = url.split('page=')[1];
+        loadLogs(page);
+    });
+
+    $('#button-delete-logs').on('click', function() {
+        if (confirm('{{ text_confirm_delete }}')) {
+            $.ajax({
+                url: 'index.php?route=octemplates/module/oct_otp_login/deleteLogs&user_token={{ user_token }}',
+                dataType: 'json',
+                success: function(json) {
+                    if (json['success']) {
+                        usNotify('success', json['success']);
+                        loadLogs(1);
+                        $('#button-delete-logs').hide();
+                        $('#help-del-block').hide();
+                    } else if (json['error']) {
+                        usNotify('warning', json['error']);
+                    }
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    console.error(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                }
+            });
+        }
+    });
+
+    $('a[href="#tab-ip-logs"]').on('shown.bs.tab', function (e) {
+    loadIpLogs(1);
+});
+
+    function loadIpLogs(page) {
+        $.ajax({
+            url: 'index.php?route=octemplates/module/oct_otp_login/ipLogs&user_token={{ user_token }}&page=' + page,
+            dataType: 'json',
+            beforeSend: function() {
+                $('#table-ip-logs tbody').html('<tr><td colspan="4" class="text-center">{{ text_loading }}</td></tr>');
+            },
+            success: function(json) {
+                if (json['logs'].length > 0) {
+                    var html = '';
+
+                    $.each(json['logs'], function(index, log) {
+                        html += '<tr>';
+                        html += '<td>' + log['ip_address'] + '</td>';
+                        html += '<td>' + log['attempt_count'] + '</td>';
+                        html += '<td>' + log['last_attempt'] + '</td>';
+                        html += '</tr>';
+                    });
+
+                    $('#table-ip-logs tbody').html(html);
+
+                    // Pagination
+                    if (json['pagination']) {
+                        $('#ip-logs-pagination').html(json['pagination']);
+                    } else {
+                        $('#ip-logs-pagination').html('');
+                    }
+                } else {
+                    $('#table-ip-logs tbody').html('<tr><td colspan="3" class="text-center">{{ text_no_results }}</td></tr>');
+                    $('#ip-logs-pagination').html('');
+                    $('#button-delete-ip-logs').hide();
+                    $('#help-del-ip-block').hide();
+                }
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                console.error(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+            }
+        });
+    }
+
+    $('#ip-logs-pagination').on('click', 'a', function(e) {
+        e.preventDefault();
+
+        var url = $(this).attr('href');
+        var page = url.split('page=')[1];
+        loadIpLogs(page);
+    });
+
+    $('#button-delete-ip-logs').on('click', function() {
+        if (confirm('{{ text_confirm_delete }}')) {
+            $.ajax({
+                url: 'index.php?route=octemplates/module/oct_otp_login/deleteIpLogs&user_token={{ user_token }}',
+                dataType: 'json',
+                success: function(json) {
+                    if (json['success']) {
+                        usNotify('success', json['success']);
+                        loadIpLogs(1);
+                        $('#button-delete-ip-logs').hide();
+                        $('#help-del-ip-block').hide();
+                    } else if (json['error']) {
+                        usNotify('warning', json['error']);
+                    }
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    console.error(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                }
+            });
+        }
+    });
+    </script>
+{{ footer }}

@@ -1,0 +1,320 @@
+  {{ header }}
+  {{ column_left }}
+  <div id="content">
+    <div class="page-header">
+      <div class="container-fluid">
+        <div class="pull-right">
+          <button type="submit" form="form-oct_review_reminder" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+          <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+        </div>
+        <h1>{{ heading_title }}</h1>
+        <ul class="breadcrumb">
+          {% for breadcrumb in breadcrumbs %}
+            <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    <div class="container-fluid">
+      {% if error_warning %}
+        <script>
+          usNotify('danger', '{{ error_warning }}');
+        </script>
+      {% endif %}
+      {% if error_days_after_order %}
+        <script>
+          usNotify('danger', '{{ error_days_after_order }}');
+        </script>
+      {% endif %}
+      {% if error_order_status %}
+        <script>
+          usNotify('danger', '{{ error_order_status }}');
+        </script>
+      {% endif %}
+      {% if error_cron_password %}
+        <script>
+          usNotify('danger', '{{ error_cron_password }}');
+        </script>
+      {% endif %}
+      {% if success %}
+        <script>
+          usNotify('success', '{{ success }}');
+        </script>
+      {% endif %}
+    
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+        </div>
+        <div class="panel-body">
+          <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-oct_review_reminder" class="form-horizontal">
+            <ul class="nav nav-tabs">
+              <li class="active"><a href="#tab-general" data-toggle="tab">{{ tab_general }}</a></li>
+              <li><a href="#tab-email_templates" data-toggle="tab">{{ tab_email_templates }}</a></li>
+              <li><a href="#tab-statistics" data-toggle="tab">{{ tab_statistics }}</a></li>
+            </ul>
+            <div class="tab-content">
+              <!-- Головне Налаштування -->
+              <div class="tab-pane active" id="tab-general">
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="oct_review_reminder_status">{{ entry_status }}</label>
+                  <div class="col-sm-10">
+                    <div class="toggle-group">
+                      <input type="checkbox" name="oct_review_reminder_status" {% if oct_review_reminder_status %}checked="checked"{% endif %} id="oct_review_reminder_status" tabindex="1">
+                      <label for="oct_review_reminder_status"></label>
+                      <div class="onoffswitch pull-left" aria-hidden="true">
+                        <div class="onoffswitch-label">
+                          <div class="onoffswitch-inner"></div>
+                          <div class="onoffswitch-switch"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+  
+                <div id="general_settings" {% if not oct_review_reminder_status %}style="display:none"{% endif %}>
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-days-after-order">{{ entry_days_after_order }}</label>
+                    <div class="col-sm-10">
+                      <input type="text" name="oct_review_reminder_days_after_order" value="{{ oct_review_reminder_days_after_order }}" placeholder="{{ entry_days_after_order }}" id="input-days-after-order" class="form-control" />
+                        {% if error_days_after_order %}<div class="text-danger"></div>{% endif %}
+                      <span class="help-block">{{ help_days_after_order }}</span>
+                    </div>
+                  </div>
+
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label">{{ entry_order_status }}</label>
+                    <div class="col-sm-10">
+                      <select name="oct_review_reminder_order_status[]" class="form-control" style="min-height: 240px;" multiple="multiple">
+                        {% for order_status in order_statuses %}
+                          <option value="{{ order_status.order_status_id }}" {% if order_status.order_status_id in oct_review_reminder_order_status %}selected="selected"{% endif %}>{{ order_status.name }}</option>
+                        {% endfor %}
+                      </select>
+                      {% if error_order_status %}<div class="text-danger"></div>{% endif %}
+                      <span class="help-block">{{ help_order_status }}</span>
+                    </div>
+                  </div>
+
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-days-after-order">{{ entry_cron_password }}</label>
+                    <div class="col-sm-10">
+                      <input type="text" name="oct_review_reminder_cron_password" value="{{ oct_review_reminder_cron_password }}" placeholder="{{ entry_cron_password }}" id="input-days-after-order" class="form-control" />
+                      {% if error_cron_password %}<div class="text-danger"></div>{% endif %}
+                      <span class="help-block">{{ help_cron_password }}</span>
+                    </div>
+                  </div>
+                    {% if cron_url %}
+                        <div class="form-group">
+                                <label class="col-sm-2 control-label" for="input-cron">{{ entry_cron }}</label>
+                                <div class="col-sm-10">
+                                    <div class="input-group">
+                                        <input type="text" value="/usr/bin/wget -O - -q -t 1 '{{ cron_url }}'" id="input-cron" class="form-control" readonly="">
+                                        <span class="input-group-btn">
+                                            <button id="clipboard-button" class="btn btn-info" type="button" data-toggle="tooltip" title="" onclick="copyToClipboard('input-cron');" data-original-title="{{ text_copy }}">
+                                                <i class="fa fa-files-o" aria-hidden="true"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                     <span class="help-block">{{ help_cron }}</span>
+                                </div>
+                        </div>
+                    {% endif %}
+
+                </div>
+              </div>
+  
+              <!-- Шаблони Листів -->
+              <div class="tab-pane" id="tab-email_templates">
+              <div class="form-group">
+                  <label class="col-sm-2 control-label" for="oct_review_reminder_etemplates_status">{{ entry_status }}</label>
+                  <div class="col-sm-10">
+                    <div class="toggle-group">
+                      <input type="checkbox" name="oct_review_reminder_etemplates_status" {% if oct_review_reminder_etemplates_status %}checked="checked"{% endif %} id="oct_review_reminder_etemplates_status" tabindex="1">
+                      <label for="oct_review_reminder_etemplates_status"></label>
+                      <div class="onoffswitch pull-left" aria-hidden="true">
+                        <div class="onoffswitch-label">
+                          <div class="onoffswitch-inner"></div>
+                          <div class="onoffswitch-switch"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group" id="etemplates_status" {% if not oct_review_reminder_etemplates_status %}style="display:none"{% endif %}>
+                  <div class="col-sm-12">
+                    <ul class="nav nav-tabs" id="language_tabs">
+                      {% for language in languages %}
+                        <li {% if loop.first %}class="active"{% endif %}><a href="#language{{ language.language_id }}" data-toggle="tab"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /> {{ language.name }}</a></li>
+                      {% endfor %}
+                    </ul>
+                    <div class="tab-content">
+                      {% for language in languages %}
+                        <div class="tab-pane {% if loop.first %}active{% endif %}" id="language{{ language.language_id }}">
+                          <div class="form-group required">
+                            <label class="col-sm-2 control-label" for="input-email_template_{{ language.language_id }}">{{ entry_email_subject }}</label>
+                            <div class="col-sm-10">
+                              <input type="text" name="oct_review_reminder_email_template[{{ language.language_id }}][subject]" value="{{ oct_review_reminder_email_template[language.language_id].subject | default('') }}" placeholder="{{ entry_email_subject }}" id="input-email_template_{{ language.language_id }}" class="form-control" />
+                            </div>
+                          </div>
+                          <div class="form-group required">
+                            <label class="col-sm-2 control-label" for="input-email_template_body_{{ language.language_id }}">{{ entry_email_body }}</label>
+                            <div class="col-sm-10">
+                              <textarea name="oct_review_reminder_email_template[{{ language.language_id }}][body]" data-toggle="summernote" data-lang="{{ summernote }}" class="form-control" placeholder="{{ entry_email_body }}" id="input-email_template_body_{{ language.language_id }}">{{ oct_review_reminder_email_template[language.language_id].body | default('') }}</textarea>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label class="col-sm-2 control-label">{{ text_shortcodes }}</label>
+                            <div class="col-sm-10">
+                              <ul>
+                                  <li><strong>[customer_name]</strong> - {{ text_shortcode_customer_name }}</li>
+                                  <li><strong>[order_id]</strong> - {{ text_shortcode_order_id }}</li>
+                                  <li><strong>[products]</strong> - {{ text_shortcode_products_name }}</li>
+                                  <li><strong>[review_link]</strong> - {{ text_shortcode_review_link }}</li>
+                                  <li><strong>[store]</strong> - {{ text_shortcode_store }}</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+  
+              <!-- Статистика -->
+              <div class="tab-pane" id="tab-statistics">
+                <div class="form-group">
+                  <div class="col-sm-12">
+                    <div id="log_container" class="table-responsive">
+                      <table class="table table-bordered table-hover">
+                        <thead>
+                          <tr>
+                            <td class="text-left">{{ column_order_id }}</td>
+                            <td class="text-left">{{ column_email }}</td>
+                            <td class="text-left">{{ column_telephone }}</td>
+                            <td class="text-left">{{ column_sent_date }}</td>
+                            <td class="text-left">{{ column_status }}</td>
+                          </tr>
+                        </thead>
+                        <tbody id="log_table_body">
+                        </tbody>
+                      </table>
+                      <nav aria-label="Page navigation">
+                        <ul class="pagination" id="log_pagination">
+                        </ul>
+                      </nav>
+                    </div>
+                  </div>
+                </div>
+              </div>
+  
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  
+    <script>
+      $('#oct_review_reminder_status').change(function() {
+        var $input = $(this);
+        if ($input.is(":checked")) {
+          $("#general_settings").slideDown('slow');
+        } else {
+          $("#general_settings").slideUp('slow');
+        }
+      });
+
+      $('#oct_review_reminder_etemplates_status').change(function() {
+        var $input = $(this);
+        if ($input.is(":checked")) {
+          $("#etemplates_status").slideDown('slow');
+        } else {
+          $("#etemplates_status").slideUp('slow');
+        }
+      });
+
+      function copyToClipboard(inputId) {
+        let input = document.getElementById(inputId);
+        input.select();
+        document.execCommand('copy');
+
+        let button = document.getElementById('clipboard-button');
+        let icon = button.querySelector('i');
+
+        changeButtonState(button, icon, '#5cb85c', 'fa-check', 'fa-files-o');
+
+        setTimeout(() => {
+            changeButtonState(button, icon, '', 'fa-files-o', 'fa-check');
+        }, 5000);
+      }
+
+      function changeButtonState(button, icon, bgColor, addIconClass, removeIconClass) {
+        button.style.backgroundColor = bgColor;
+        icon.classList.remove(removeIconClass);
+        icon.classList.add(addIconClass);
+      }
+      $('#language_tabs a:first').tab('show');
+  
+      function loadLogs(page) {
+          $.ajax({
+              url: 'index.php?route=octemplates/module/oct_review_reminder/getLogs&user_token={{ user_token }}&page=' + page,
+              type: 'GET',
+              dataType: 'json',
+              success: function(json) {
+                  if (json.logs) {
+                      var html = '';
+                      for (var i = 0; i < json.logs.length; i++) {
+                          html += '<tr>';
+                          html += '<td class="text-left"><a href="index.php?route=sale/order/info&user_token={{ user_token }}&order_id=' + json.logs[i].order_id + '" target="_blank">' + json.logs[i].order_id + '</a></td>';
+                          
+                          if (json.logs[i].customer_id > 0) {
+                              html += '<td class="text-left">' + json.logs[i].firstname + ' ' + json.logs[i].lastname + '<br /> <a href="index.php?route=customer/customer/edit&user_token={{ user_token }}&customer_id=' + json.logs[i].customer_id + '" target="_blank">' + json.logs[i].email + '</a></td>';
+                          } else {
+                              html += '<td class="text-left">' + json.logs[i].email + '</td>';
+                          }
+
+                          html += '<td class="text-left">' + json.logs[i].telephone + '</td>';
+                          html += '<td class="text-left">' + json.logs[i].date_added + '</td>';
+
+                          if (json.logs[i].is_sent == 1) {
+                              html += '<td class="text-left"><span class="badge badge-success" style="background-color: green; color: white;">sended</span></td>';
+                          } else {
+                              html += '<td class="text-left"><span class="badge badge-danger" style="background-color: red; color: white;">error</span></td>';
+                          }
+
+                          html += '</tr>';
+                      }
+                      $('#log_table_body').html(html);
+
+                      if (json.pagination) {
+                          $('#log_pagination').html(json.pagination);
+
+                          $('#log_pagination а').on('click', function (e) {
+                              e.preventDefault();
+                              var page = $(this).attr('href').split('page=')[1];
+                              loadLogs(page);
+                          });
+                      }
+
+                      if (json.logs.length == 0) {
+                          $('#log_table_body').html('<tr><td colspan="5" class="text-left"><div class="alert alert-danger">{{ text_no_logs }}</div></td></tr>');
+                      }
+                  }
+              }
+          });
+      }
+
+      $(document).ready(function() {
+          $('a[href="#tab-statistics"]').on('shown.bs.tab', function (e) {
+              loadLogs(1);
+          });
+          
+          $(document).on('click', '#log_pagination a', function (e) {
+              e.preventDefault();
+              var page = $(this).attr('href').split('page=')[1];
+              loadLogs(page);
+          });
+      });
+    </script>
+  </div>
+  {{ footer }}

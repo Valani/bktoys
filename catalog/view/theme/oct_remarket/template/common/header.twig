@@ -156,13 +156,47 @@ $('#oct-infobar-btn').on('click', function () {
 #oct-infobar-btn:hover {background:{{ oct_information_bar_background_button_hover }};color:{{ oct_information_bar_color_text_button_hover }};}
 </style>
 {% endif %}
-
+{% if oct_remarket_data.header_cur is defined or oct_remarket_data.header_lang is defined or oct_remarket_data.header_account is defined or oct_remarket_data.header_menu is defined %}
+<nav id="top" class="top-nav d-none d-lg-block">
+	<div class="container d-flex justify-content-between">
+	  	{% if header_informations is defined and header_informations is not empty %}
+		<ul class="top-nav-info-list list-unstyled d-flex align-items-center text-uppercase">
+			{% for header_link in header_informations %}
+			<li><a href="{{ header_link.href }}">{{ header_link.title }}</a></li>
+			{% endfor %}
+		</ul>
+		{% endif %}
+		<div class="top-nav-account-links list-unstyled d-flex">
+			{{ language }}
+			{{ currency }}
+            {% if oct_remarket_data.header_account is defined %}
+			<div class="top-nav-account-links-item rm-dropdown-box">
+				{% if logged %}
+				<span title="{{ text_account }}" class="rm-dropdown-toggle d-flex align-items-center">{{ text_account }}</span>
+                <div class="rm-dropdown">
+                    <div class="rm-dropdown-inner">
+                        <ul class="list-unstyled">
+        		            <li><a href="{{ account }}">{{ text_account }}</a></li>
+        		            <li><a href="{{ order }}">{{ text_order }}</a></li>
+        		            <li><a href="{{ logout }}">{{ text_logout }}</a></li>
+        				</ul>
+                    </div>
+                </div>
+				{% else %}
+				<span onclick="octPopupLogin();" title="{{ text_account }}" class="d-flex align-items-center" role="button" aria-haspopup="true">{{ text_account }}</span>
+				{% endif %}
+	        </div>
+            {% endif %}
+		</div>
+	</div>
+</nav>
+{% endif %}
 <header>
   <div class="container-fluid container-sm">
     <div class="row align-items-center flex-column flex-md-row">
 		{% if logo %}
     	<div class="col-md-3 col-lg-2 order-0">
-            <div id="logo" class="d-flex align-items-center justify-content-center h-100" style="min-height: 60px; padding: 5px 0;">
+            <div id="logo" class="d-flex align-items-center justify-content-center">
     			{% if oct_home is defined and oct_home %}
     			<span><img src="{{ logo }}" title="{{ name }}" alt="{{ name }}" class="img-fluid"{% if logo_width is defined and logo_width %} width="{{ logo_width }}"{% endif %}{% if logo_height is defined and logo_height %} height="{{ logo_height }}"{% endif %} /></span>
     			{% else %}
@@ -175,15 +209,23 @@ $('#oct-infobar-btn').on('click', function () {
 		{% else %}
 		<h1><a href="{{ home }}">{{ name }}</a></h1>
 		{% endif %}
-        <div class="col-12 col-md-6 col-lg-6 order-3 order-md-2{% if oct_remarket_data.contact_address[oct_lang_id] is defined and oct_remarket_data.contact_address[oct_lang_id] %} mt-lg-2 mt-xl-3{% endif %}">
-            {{ search }}
+        <div class="col-2 d-none d-lg-block order-1">
+            <button id="menu_toggle_button" type="button" aria-label="Menu" class="rm-btn primary d-flex align-items-center justify-content-between">
+                <span class="rm-btn-icon">
+                    <img class="catalog-icon" src="catalog/view/theme/oct_remarket/img/sprite.svg#include--footer-catalog-icon" alt="" width="14" height="14">
+                    <img class="close-icon" src="catalog/view/theme/oct_remarket/img/sprite.svg#include--close-catalog-icon" alt="" width="14" height="14">
+                </span>
+                <span class="rm-btn-text">{{ oct_menu_catalog }}</span>
+            </button>
         </div>
-        <div class="col-md-4 col-lg-4 d-flex justify-content-end align-items-center order-2 order-md-3">
-            <div class="rm-header-address d-none d-lg-block mr-3">
-                {% if oct_remarket_data.contact_address[oct_lang_id] is defined and oct_remarket_data.contact_address[oct_lang_id] %}
-                <div class="rm-dropdown-box w-100">
+        <div class="col-12 col-md-6 col-lg-4 order-3 order-md-2{% if oct_remarket_data.contact_address[oct_lang_id] is defined and oct_remarket_data.contact_address[oct_lang_id] %} mt-lg-2 mt-xl-3{% endif %}">
+            {{ search }}
+            {% if oct_remarket_data.contact_address[oct_lang_id] is defined and oct_remarket_data.contact_address[oct_lang_id] %}
+    		<div class="rm-header-address d-none d-lg-block">
+    	        <div class="rm-dropdown-box w-100">
                     <div class="rm-dropdown-toggle">
-                        <span class="rm-header-address-link">наші магазини</span>
+                        <span>{{ oct_our_address }}:</span>
+                        <span class="rm-header-address-link">{{ oct_remarket_data.contact_address[oct_lang_id] }}</span>
                     </div>
     				<div class="rm-dropdown">
     					<div id="rm_header_locations" class="rm-dropdown-inner">
@@ -287,70 +329,30 @@ $('#oct-infobar-btn').on('click', function () {
     				    </div>
     				</div>
     			</div>
-                {% endif %}
+    		</div>
+    		{% endif %}
+        </div>
+		{% if oct_contact_telephones is defined and oct_contact_telephones is not empty %}
+		<div class="col-12 col-md-3 col-lg-2 d-none d-md-flex justify-content-center order-2 order-md-3">
+          <div class="rm-header-phones d-flex align-items-center">
+            <div class="rm-header-phones-icon">
+              <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--header-phones-icon" alt="" width="30" height="30">
             </div>
-            
-            {% if oct_remarket_data.header_account is defined %}
-            <div class="rm-header-account mr-3">
-                {% if logged %}
-                <div class="rm-dropdown-box">
-                    <span title="{{ text_account }}" class="rm-dropdown-toggle d-flex align-items-center">
-                        <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-account" alt="{{ text_account }}" width="20" height="22" class="mr-2">
-                        <span>{{ text_account }}</span>
-                    </span>
-                    <div class="rm-dropdown">
-                        <div class="rm-dropdown-inner">
-                            <ul class="list-unstyled">
-            		            <li><a href="{{ account }}">{{ text_account }}</a></li>
-            		            <li><a href="{{ order }}">{{ text_order }}</a></li>
-            		            <li><a href="{{ logout }}">{{ text_logout }}</a></li>
-            				</ul>
-                        </div>
-                    </div>
-                </div>
-                {% else %}
-                <div onclick="octPopupLogin();" title="Вхід" class="d-flex align-items-center" role="button" aria-haspopup="true" style="cursor: pointer;">
-                    <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-account" alt="Вхід" width="20" height="22" class="mr-2">
-                    <span>Вхід</span>
-                </div>
-                {% endif %}
+            <div class="rm-header-phones-list">
+            {% for oct_contact_telephone in oct_contact_telephones %}
+            <a href="tel:{{ oct_contact_telephone|replace({" " : "", "-" : "", "(" : "", ")" : ""}) }}" class="rm-header-phones-list-item">{{ oct_contact_telephone }}</a>
+            {% endfor %}
+            {% if oct_popup_call_phone_status is defined and oct_popup_call_phone_status %}
+			<span class="rm-header-phones-list-link blue-link rm-phone-link" onclick="octPopupCallPhone();">{{ oct_call_phone }}</span>
+			{% endif %}
             </div>
-            {% endif %}
-            
-            <div class="rm-header-cart">
-                {{ cart }}
-            </div>
+          </div>
+        </div>
+        {% endif %}
+        <div class="col-md-2 d-lg-flex justify-content-center order-4">
+            {{ cart }}
         </div>
         {{ menu }}
     </div>
   </div>
 </header>
-
-{% if oct_remarket_data.header_cur is defined or oct_remarket_data.header_lang is defined or oct_remarket_data.header_account is defined or oct_remarket_data.header_menu is defined %}
-<nav id="top" class="top-nav d-none d-lg-block">
-	<div class="container d-flex justify-content-between">
-        <div class="d-flex align-items-center">
-            <button id="menu_toggle_button" type="button" aria-label="Menu" class="rm-btn primary d-flex align-items-center justify-content-between mr-3">
-                <span class="rm-btn-icon">
-                    <img class="catalog-icon" src="catalog/view/theme/oct_remarket/img/sprite.svg#include--footer-catalog-icon" alt="" width="14" height="14">
-                    <img class="close-icon" src="catalog/view/theme/oct_remarket/img/sprite.svg#include--close-catalog-icon" alt="" width="14" height="14">
-                </span>
-                <span class="rm-btn-text">{{ oct_menu_catalog }}</span>
-            </button>
-            
-            {% if header_informations is defined and header_informations is not empty %}
-            <ul class="top-nav-info-list list-unstyled d-flex align-items-center text-uppercase ml-3">
-                {% for header_link in header_informations %}
-                <li class="mr-3"><a href="{{ header_link.href }}">{{ header_link.title }}</a></li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-        </div>
-        
-		<div class="top-nav-account-links list-unstyled d-flex">
-			{{ language }}
-			{{ currency }}
-		</div>
-	</div>
-</nav>
-{% endif %}

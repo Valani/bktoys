@@ -350,21 +350,20 @@ $('#oct-infobar-btn').on('click', function () {
 <nav id="top" class="top-nav d-none d-lg-block">
 	<div class="container d-flex justify-content-between">
         <div class="d-flex align-items-center">
-            <button id="menu_toggle_button" type="button" aria-label="Menu" class="rm-btn primary d-flex align-items-center justify-content-between mr-3">
-                <span class="rm-btn-icon">
-                    <img class="catalog-icon" src="catalog/view/theme/oct_remarket/img/sprite.svg#include--footer-catalog-icon" alt="" width="14" height="14">
-                    <img class="close-icon" src="catalog/view/theme/oct_remarket/img/sprite.svg#include--close-catalog-icon" alt="" width="14" height="14">
-                </span>
-                <span class="rm-btn-text">{{ oct_menu_catalog }}</span>
-            </button>
-            
-            {% if header_informations is defined and header_informations is not empty %}
-            <ul class="top-nav-info-list list-unstyled d-flex align-items-center text-uppercase ml-3">
-                {% for header_link in header_informations %}
-                <li class="mr-3"><a href="{{ header_link.href }}">{{ header_link.title }}</a></li>
-                {% endfor %}
+            <ul class="top-nav-info-list list-unstyled d-flex align-items-center text-uppercase">
+                <li class="mr-3">
+                    <a href="#" id="menu_toggle_button" aria-label="Menu">
+                        <img class="catalog-icon" src="catalog/view/theme/oct_remarket/img/sprite.svg#include--footer-catalog-icon" alt="" width="14" height="14">
+                        <img class="close-icon" src="catalog/view/theme/oct_remarket/img/sprite.svg#include--close-catalog-icon" alt="" width="14" height="14">
+                        {{ oct_menu_catalog }}
+                    </a>
+                </li>
+                {% if header_informations is defined and header_informations is not empty %}
+                    {% for header_link in header_informations %}
+                    <li class="mr-3"><a href="{{ header_link.href }}">{{ header_link.title }}</a></li>
+                    {% endfor %}
+                {% endif %}
             </ul>
-            {% endif %}
         </div>
         
 		<div class="top-nav-account-links list-unstyled d-flex">

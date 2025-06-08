@@ -175,9 +175,9 @@ $('#oct-infobar-btn').on('click', function () {
 		{% else %}
 		<h1><a href="{{ home }}">{{ name }}</a></h1>
 		{% endif %}
-        <div class="col-12 col-md-4 col-lg-4 order-3 order-md-2 d-flex align-items-center">
-            <div style="flex: 1;">{{ search }}</div>
-            <div class="rm-header-address d-none d-lg-block ml-3" style="flex-shrink: 0;">
+        <div class="col-12 col-md-5 col-lg-5 order-3 order-md-2 d-flex align-items-center">
+            <div style="flex: 2;">{{ search }}</div>
+            <div class="rm-header-address d-none d-lg-block ml-4" style="flex-shrink: 0;">
                 {% if oct_remarket_data.contact_address[oct_lang_id] is defined and oct_remarket_data.contact_address[oct_lang_id] %}
                 <div class="rm-dropdown-box">
                     <div class="rm-dropdown-toggle">
@@ -288,23 +288,23 @@ $('#oct-infobar-btn').on('click', function () {
                 {% endif %}
             </div>
         </div>
-        <div class="col-md-5 col-lg-5 d-flex justify-content-end align-items-center order-2 order-md-3">
+        <div class="col-md-4 col-lg-4 d-flex justify-content-end align-items-center order-2 order-md-3">
             
             <!-- Free space -->
-            <div style="flex: 1;"></div>
+            <div style="flex: 0.5;"></div>
             
             <!-- Icons block: viewed, wishlist, cart -->
             <div class="d-flex align-items-center mr-3">
                 {% if product_views_count is defined and product_views_count %}
-                <div onclick="rmSidebar('{{ oct_product_views }}', 'viewed');" class="oct-fixed-bar-item oct-fixed-bar-item-viewed mr-2" title="{{ oct_product_views }}" style="cursor: pointer;">
+                <div onclick="rmSidebar('{{ oct_product_views }}', 'viewed');" class="rm-header-icon rm-header-icon-viewed mr-2" title="{{ oct_product_views }}" style="cursor: pointer; color: #333;">
                     <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-viewed" alt="{{ oct_product_views }}" width="24" height="24">
-                    <span class="oct-fixed-bar-quantity">{{ product_views_count }}</span>
+                    <span class="rm-header-quantity" style="color: #333;">{{ product_views_count }}</span>
                 </div>
                 {% endif %}
                 {% if oct_bar_data.show_wishlist is defined and oct_bar_data.show_wishlist %}
-                <a href="{{ wishlist_link }}" class="oct-fixed-bar-item oct-fixed-bar-item-wishlist mr-2" title="{{ fixed_bar_wishlist }}">
+                <a href="{{ wishlist_link }}" class="rm-header-icon rm-header-icon-wishlist mr-2" title="{{ fixed_bar_wishlist }}" style="color: #333; text-decoration: none;">
                     <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-wishlist" alt="{{ fixed_bar_wishlist }}" width="24" height="20">
-                    <span class="oct-fixed-bar-quantity oct-fixed-bar-wishlist-quantity">{{ wishlist_total }}</span>
+                    <span class="rm-header-quantity" style="color: #333;">{{ wishlist_total }}</span>
                 </a>
                 {% endif %}
                 <div class="rm-header-cart">

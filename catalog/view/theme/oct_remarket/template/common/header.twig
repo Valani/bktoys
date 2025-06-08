@@ -175,13 +175,11 @@ $('#oct-infobar-btn').on('click', function () {
 		{% else %}
 		<h1><a href="{{ home }}">{{ name }}</a></h1>
 		{% endif %}
-        <div class="col-12 col-md-4 col-lg-4 order-3 order-md-2">
-            {{ search }}
-        </div>
-        <div class="col-md-5 col-lg-5 d-flex justify-content-end align-items-center order-2 order-md-3">
-            <div class="rm-header-address d-none d-lg-block mr-3" style="flex-shrink: 0;">
+        <div class="col-12 col-md-4 col-lg-4 order-3 order-md-2 d-flex align-items-center">
+            <div style="flex: 1;">{{ search }}</div>
+            <div class="rm-header-address d-none d-lg-block ml-3" style="flex-shrink: 0;">
                 {% if oct_remarket_data.contact_address[oct_lang_id] is defined and oct_remarket_data.contact_address[oct_lang_id] %}
-                <div class="rm-dropdown-box w-100">
+                <div class="rm-dropdown-box">
                     <div class="rm-dropdown-toggle">
                         <span class="rm-header-address-link" style="font-size: 16px; font-weight: 500;">наші магазини</span>
                     </div>
@@ -253,28 +251,28 @@ $('#oct-infobar-btn').on('click', function () {
                                         {% if location.phone is defined and location.phone %}
                 						<div class="rm-header-location-phones">
                 							<span>{{ oct_telephones }}</span>
-            								{% for phone in location.phone %}
-            								<a href="tel:{{ phone|replace({" " : "", "-" : "", "(" : "", ")" : ""}) }}">{{ phone }}</a>
-            								{% endfor %}
+            							{% for phone in location.phone %}
+            							<a href="tel:{{ phone|replace({" " : "", "-" : "", "(" : "", ")" : ""}) }}">{{ phone }}</a>
+            							{% endfor %}
                 						</div>
                 						{% endif %}
                 						{% if location.open is defined and location.open %}
                 						<div class="rm-header-location-shedule">
-            								{% for open in location.open %}
-            								<span>{{ open }}</span><br>
-            								{% endfor %}
+            							{% for open in location.open %}
+            							<span>{{ open }}</span><br>
+            							{% endfor %}
                 						</div>
                 						{% endif %}
-                            			{% if location.map is defined %}
-                            			<div id="oct-header-location-map-{{ key }}" class="rm-header-location-map not_in"></div>
+                            		{% if location.map is defined %}
+                            		<div id="oct-header-location-map-{{ key }}" class="rm-header-location-map not_in"></div>
                                         <script>
                                         $('body').on('click', '#rm-header-location-{{ key }}', function(){
                                             octShowMap('{{ location.map }}', '#oct-header-location-map-{{ key }}');
                                         });
                                         </script>
-                            			{% endif %}
+                            		{% endif %}
                                     </div>
-                        			{% endif %}
+                        		{% endif %}
                         		</div>
                         		{% endfor %}
                             {% endif %}
@@ -284,14 +282,39 @@ $('#oct-infobar-btn').on('click', function () {
                                     <span class="rm-btn-text">{{ oct_go_contact_text }}</span>
                                 </a>
                             </div>
-    				    </div>
-    				</div>
+    			    </div>
+    			</div>
     			</div>
                 {% endif %}
             </div>
+        </div>
+        <div class="col-md-5 col-lg-5 d-flex justify-content-end align-items-center order-2 order-md-3">
             
+            <!-- Free space -->
+            <div style="flex: 1;"></div>
+            
+            <!-- Icons block: viewed, wishlist, cart -->
+            <div class="d-flex align-items-center mr-3">
+                {% if product_views_count is defined and product_views_count %}
+                <div onclick="rmSidebar('{{ oct_product_views }}', 'viewed');" class="oct-fixed-bar-item oct-fixed-bar-item-viewed mr-2" title="{{ oct_product_views }}" style="cursor: pointer;">
+                    <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-viewed" alt="{{ oct_product_views }}" width="24" height="24">
+                    <span class="oct-fixed-bar-quantity">{{ product_views_count }}</span>
+                </div>
+                {% endif %}
+                {% if oct_bar_data.show_wishlist is defined and oct_bar_data.show_wishlist %}
+                <a href="{{ wishlist_link }}" class="oct-fixed-bar-item oct-fixed-bar-item-wishlist mr-2" title="{{ fixed_bar_wishlist }}">
+                    <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-wishlist" alt="{{ fixed_bar_wishlist }}" width="24" height="20">
+                    <span class="oct-fixed-bar-quantity oct-fixed-bar-wishlist-quantity">{{ wishlist_total }}</span>
+                </a>
+                {% endif %}
+                <div class="rm-header-cart">
+                    {{ cart }}
+                </div>
+            </div>
+            
+            <!-- Login button -->
             {% if oct_remarket_data.header_account is defined %}
-            <div class="rm-header-account mr-3">
+            <div class="rm-header-account">
                 {% if logged %}
                 <div class="rm-dropdown-box">
                     <span title="{{ text_account }}" class="rm-dropdown-toggle d-flex align-items-center">
@@ -317,9 +340,6 @@ $('#oct-infobar-btn').on('click', function () {
             </div>
             {% endif %}
             
-            <div class="rm-header-cart">
-                {{ cart }}
-            </div>
         </div>
         {{ menu }}
     </div>

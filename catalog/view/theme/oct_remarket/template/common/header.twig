@@ -162,7 +162,7 @@ $('#oct-infobar-btn').on('click', function () {
     <div class="row align-items-center flex-column flex-md-row">
 		{% if logo %}
     	<div class="col-md-3 col-lg-2 order-0">
-            <div id="logo" class="d-flex align-items-center justify-content-center">
+            <div id="logo" class="d-flex align-items-center justify-content-center h-100" style="min-height: 60px; padding: 5px 0;">
     			{% if oct_home is defined and oct_home %}
     			<span><img src="{{ logo }}" title="{{ name }}" alt="{{ name }}" class="img-fluid"{% if logo_width is defined and logo_width %} width="{{ logo_width }}"{% endif %}{% if logo_height is defined and logo_height %} height="{{ logo_height }}"{% endif %} /></span>
     			{% else %}
@@ -339,9 +339,9 @@ $('#oct-infobar-btn').on('click', function () {
             </button>
             
             {% if header_informations is defined and header_informations is not empty %}
-            <ul class="top-nav-info-list list-unstyled d-flex align-items-center text-uppercase">
+            <ul class="top-nav-info-list list-unstyled d-flex align-items-center text-uppercase ml-3">
                 {% for header_link in header_informations %}
-                <li><a href="{{ header_link.href }}">{{ header_link.title }}</a></li>
+                <li class="mr-3"><a href="{{ header_link.href }}">{{ header_link.title }}</a></li>
                 {% endfor %}
             </ul>
             {% endif %}

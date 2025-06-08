@@ -161,13 +161,13 @@ $('#oct-infobar-btn').on('click', function () {
   <div class="container-fluid container-sm">
     <div class="row align-items-center flex-column flex-md-row">
 		{% if logo %}
-    	<div class="col-md-3 col-lg-2 order-0">
-            <div id="logo" class="d-flex align-items-center justify-content-center h-100" style="min-height: 60px; padding: 5px 0;">
+    	<div class="col-md-3 col-lg-3 order-0">
+            <div id="logo" class="d-flex align-items-center justify-content-center h-100" style="min-height: 80px; padding: 10px;">
     			{% if oct_home is defined and oct_home %}
-    			<span><img src="{{ logo }}" title="{{ name }}" alt="{{ name }}" class="img-fluid"{% if logo_width is defined and logo_width %} width="{{ logo_width }}"{% endif %}{% if logo_height is defined and logo_height %} height="{{ logo_height }}"{% endif %} /></span>
+    			<span><img src="{{ logo }}" title="{{ name }}" alt="{{ name }}" class="img-fluid" style="max-height: 60px; width: auto;"{% if logo_width is defined and logo_width %} width="{{ logo_width }}"{% endif %}{% if logo_height is defined and logo_height %} height="{{ logo_height }}"{% endif %} /></span>
     			{% else %}
     			<a href="{{ home }}">
-    				<img src="{{ logo }}" title="{{ name }}" alt="{{ name }}" class="img-fluid"{% if logo_width is defined and logo_width %} width="{{ logo_width }}"{% endif %}{% if logo_height is defined and logo_height %} height="{{ logo_height }}"{% endif %} />
+    				<img src="{{ logo }}" title="{{ name }}" alt="{{ name }}" class="img-fluid" style="max-height: 60px; width: auto;"{% if logo_width is defined and logo_width %} width="{{ logo_width }}"{% endif %}{% if logo_height is defined and logo_height %} height="{{ logo_height }}"{% endif %} />
     			</a>
     			{% endif %}
             </div>
@@ -175,15 +175,15 @@ $('#oct-infobar-btn').on('click', function () {
 		{% else %}
 		<h1><a href="{{ home }}">{{ name }}</a></h1>
 		{% endif %}
-        <div class="col-12 col-md-6 col-lg-6 order-3 order-md-2{% if oct_remarket_data.contact_address[oct_lang_id] is defined and oct_remarket_data.contact_address[oct_lang_id] %} mt-lg-2 mt-xl-3{% endif %}">
+        <div class="col-12 col-md-4 col-lg-4 order-3 order-md-2">
             {{ search }}
         </div>
-        <div class="col-md-4 col-lg-4 d-flex justify-content-end align-items-center order-2 order-md-3">
-            <div class="rm-header-address d-none d-lg-block mr-3">
+        <div class="col-md-5 col-lg-5 d-flex justify-content-end align-items-center order-2 order-md-3">
+            <div class="rm-header-address d-none d-lg-block mr-3" style="flex-shrink: 0;">
                 {% if oct_remarket_data.contact_address[oct_lang_id] is defined and oct_remarket_data.contact_address[oct_lang_id] %}
                 <div class="rm-dropdown-box w-100">
                     <div class="rm-dropdown-toggle">
-                        <span class="rm-header-address-link">наші магазини</span>
+                        <span class="rm-header-address-link" style="font-size: 16px; font-weight: 500;">наші магазини</span>
                     </div>
     				<div class="rm-dropdown">
     					<div id="rm_header_locations" class="rm-dropdown-inner">
@@ -309,7 +309,7 @@ $('#oct-infobar-btn').on('click', function () {
                     </div>
                 </div>
                 {% else %}
-                <div onclick="octPopupLogin();" title="Вхід" class="d-flex align-items-center" role="button" aria-haspopup="true" style="cursor: pointer;">
+                <div onclick="octPopupLogin();" title="Вхід" class="d-flex align-items-center oct-fixed-bar-item oct-fixed-bar-item-viewed" role="button" aria-haspopup="true" style="cursor: pointer;">
                     <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-account" alt="Вхід" width="20" height="22" class="mr-2">
                     <span>Вхід</span>
                 </div>

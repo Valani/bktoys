@@ -177,114 +177,24 @@ $('#oct-infobar-btn').on('click', function () {
 		{% endif %}
         <div class="col-12 col-md-5 col-lg-5 order-3 order-md-2 d-flex align-items-center">
             <div style="flex: 2;">{{ search }}</div>
+            
+            <!-- Mobile account icon -->
+            <div class="d-lg-none ml-3">
+                {% if oct_remarket_data.header_account is defined %}
+                    {% if logged %}
+                    <a href="{{ account }}" class="rm-header-icon rm-header-icon-account" title="{{ text_account }}" style="color: #333; text-decoration: none;">
+                        <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-account" alt="{{ text_account }}" width="24" height="24" style="filter: brightness(0);">
+                    </a>
+                    {% else %}
+                    <div onclick="octPopupLogin();" class="rm-header-icon rm-header-icon-account" title="Вхід" style="cursor: pointer; color: #333;">
+                        <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-account" alt="Вхід" width="24" height="24" style="filter: brightness(0);">
+                    </div>
+                    {% endif %}
+                {% endif %}
+            </div>
             <div class="rm-header-address d-none d-lg-block ml-4" style="flex-shrink: 0;">
                 {% if oct_remarket_data.contact_address[oct_lang_id] is defined and oct_remarket_data.contact_address[oct_lang_id] %}
-                <div class="rm-dropdown-box">
-                    <div class="rm-dropdown-toggle">
-                        <a href="https://books-toys.com.ua/ua-contact-us" class="rm-header-address-link" style="font-size: 16px; font-weight: 500; color: inherit; text-decoration: none;">наші магазини</a>
-                    </div>
-    				<div class="rm-dropdown">
-    					<div id="rm_header_locations" class="rm-dropdown-inner">
-                            <div class="rm-header-location-inner">
-                                <div class="rm-header-location active">
-                                    <div class="d-flex align-items-center">
-                                        <div class="rm-header-location-address">{{ oct_remarket_data.contact_address[oct_lang_id] }}</div>
-                                        {% if oct_locations %}
-                                        <button class="rm-btn secondary ml-auto">
-                                            <span class="rm-btn-icon"><img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--header-location-chevron" alt="" width="18" height="12"></span>
-                                        </button>
-                                        {% endif %}
-                                    </div>
-                                    {% if contact_open is defined and contact_open or contact_map is defined and contact_map and oct_contact_telephones is defined and oct_contact_telephones is not empty %}
-                                    <div class="rm-header-location-collapsed">
-                                        {% if oct_contact_telephones is defined and oct_contact_telephones is not empty %}
-                                        <div class="rm-header-location-phones">
-                                            <span>{{ oct_telephones }}</span>
-                                            {% for oct_contact_telephone in oct_contact_telephones %}
-                                            <a href="tel:{{ oct_contact_telephone|replace({" " : "", "-" : "", "(" : "", ")" : ""}) }}">{{ oct_contact_telephone }}</a>
-                                            {% endfor %}
-                                        </div>
-                                        {% endif %}
-                                        {% if oct_remarket_data.contact_open[oct_lang_id] is defined and oct_remarket_data.contact_open[oct_lang_id] %}
-                                        <div class="rm-header-location-shedule">
-                                            {% for contact_open in oct_contact_opens %}
-                                            <span>{{ contact_open }}</span><br>
-                                            {% endfor %}
-                                        </div>
-                                        {% endif %}
-                                        {% if contact_map is defined and contact_map %}
-                                        <div class="rm-header-location-map">
-                					    	<div id="oct-contact-map" class="not_in"></div>
-                					    <script>
-                                            var width = document.documentElement.clientWidth;
-
-                                            if (width > 992) {
-                    					    	$('.rm-dropdown-toggle').on('mouseenter mouseleave', function() {
-                    						    	octShowMap('{{ contact_map }}', '#oct-contact-map');
-                    							});
-                                            } else {
-                                                $('.rm-dropdown-toggle').on('click', function() {
-                    						    	octShowMap('{{ contact_map }}', '#oct-contact-map');
-                    							});
-                                            }
-                					    </script>
-                                        </div>
-                					    {% endif %}
-                                    </div>
-                                    {% endif %}
-                                </div>
-                                {% if oct_locations %}
-                                {% set key = 0 %}
-                        		{% for location in oct_locations %}
-                                {% set key = key + 1 %}
-                        		<div id="rm-header-location-{{ key }}" class="rm-header-location">
-                                    <div class="d-flex align-items-center">
-                    					{% if location.address is defined and location.address %}
-                    					<div class="rm-header-location-address">{{ location.address }}</div>
-                    					{% endif %}
-                                        <button class="rm-btn secondary ml-auto">
-                                            <span class="rm-btn-icon"><img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--header-location-chevron" alt="" width="18" height="12"></span>
-                                        </button>
-                                    </div>
-                                    {% if location.open is defined and location.open or location.map is defined and location.phone is defined and location.phone %}
-                                    <div class="rm-header-location-collapsed">
-                                        {% if location.phone is defined and location.phone %}
-                						<div class="rm-header-location-phones">
-                							<span>{{ oct_telephones }}</span>
-            							{% for phone in location.phone %}
-            							<a href="tel:{{ phone|replace({" " : "", "-" : "", "(" : "", ")" : ""}) }}">{{ phone }}</a>
-            							{% endfor %}
-                						</div>
-                						{% endif %}
-                						{% if location.open is defined and location.open %}
-                						<div class="rm-header-location-shedule">
-            							{% for open in location.open %}
-            							<span>{{ open }}</span><br>
-            							{% endfor %}
-                						</div>
-                						{% endif %}
-                            		{% if location.map is defined %}
-                            		<div id="oct-header-location-map-{{ key }}" class="rm-header-location-map not_in"></div>
-                                        <script>
-                                        $('body').on('click', '#rm-header-location-{{ key }}', function(){
-                                            octShowMap('{{ location.map }}', '#oct-header-location-map-{{ key }}');
-                                        });
-                                        </script>
-                            		{% endif %}
-                                    </div>
-                        		{% endif %}
-                        		</div>
-                        		{% endfor %}
-                            {% endif %}
-                            </div>
-                            <div class="d-flex justify-content-center rm-header-location-contacts-btn">
-                                <a href="{{ contact }}" class="rm-btn secondary">
-                                    <span class="rm-btn-text">{{ oct_go_contact_text }}</span>
-                                </a>
-                            </div>
-    			    </div>
-    			</div>
-    			</div>
+                <a href="https://books-toys.com.ua/ua-contact-us" class="rm-header-address-link" style="font-size: 16px; font-weight: 500; color: inherit; text-decoration: none;">наші магазини</a>
                 {% endif %}
             </div>
         </div>
@@ -352,7 +262,7 @@ $('#oct-infobar-btn').on('click', function () {
         <div class="d-flex align-items-center">
             <ul class="top-nav-info-list list-unstyled d-flex align-items-center text-uppercase">
                 <li class="mr-3">
-                    <a href="#" id="menu_toggle_button" aria-label="Menu">
+                    <a href="#" id="menu_toggle_button" aria-label="Menu" onmouseover="$('#menu_toggle_button').trigger('click');">
                         <img class="catalog-icon" src="catalog/view/theme/oct_remarket/img/sprite.svg#include--footer-catalog-icon" alt="" width="18" height="18">
                         {{ oct_menu_catalog }}
                     </a>
@@ -372,3 +282,7 @@ $('#oct-infobar-btn').on('click', function () {
 	</div>
 </nav>
 {% endif %}
+<style>
+/* Menu should appear over other elements */
+.top-nav { z-index: 1000; position: relative; }
+</style>

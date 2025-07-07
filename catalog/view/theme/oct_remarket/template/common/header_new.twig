@@ -70,74 +70,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         octHead.appendChild(octLink);
     }
 </script>
-<!-- ========== CUSTOM STYLES FOR HEADER ========== -->
-<style>
-@media (min-width: 992px) {
-    /* 1. Style for the moved menu button */
-    #menu_toggle_button.rm-btn.primary {
-        background-color: #006B50;
-        border-color: #006B50;
-    }
-
-    #menu_toggle_button.rm-btn.primary:hover {
-        background-color: #00523e; /* A slightly darker hover color */
-    }
-
-    /* Bugfix for toggle button icons */
-    #menu_toggle_button .close-icon {
-        display: none;
-    }
-    #menu_toggle_button.active .close-icon {
-        display: inline-block;
-    }
-    #menu_toggle_button.active .catalog-icon {
-        display: none;
-    }
-    
-    /* 2. Push account links to the far right in Nav */
-    .top-nav-account-links {
-        margin-left: auto;
-    }
-    
-    /* 3. Add some space between button and info links */
-    .top-nav-info-list {
-        margin-left: 20px;
-    }
-
-    /* 4. Increase logo size */
-    #logo img {
-        max-height: 55px !important;
-        width: auto !important;
-    }
-
-    /* 5. Style for login/account link in Header */
-    .header-account .login-link {
-        color: #000000 !important;
-        text-decoration: none !important;
-        font-weight: 500;
-        cursor: pointer;
-    }
-    .header-account .login-link:hover {
-        color: #006B50 !important; /* using the button color for hover */
-    }
-    .header-account .login-link img {
-        margin-right: 8px;
-    }
-
-    /* 6. Style for "Адреси магазинів" link */
-    .rm-header-phones-list .shops-address-link {
-        font-size: 16px;
-        font-weight: 500;
-        text-decoration: none;
-        color: #333;
-    }
-    .rm-header-phones-list .shops-address-link:hover {
-        color: #006B50;
-        text-decoration: underline;
-    }
-}
-</style>
-<!-- ========== END OF CUSTOM STYLES ========== -->
 </head>
 <body>
 {% if oct_analytics_googletm_code is defined and oct_analytics_googletm_code is not empty %}
@@ -224,73 +156,100 @@ $('#oct-infobar-btn').on('click', function () {
 #oct-infobar-btn:hover {background:{{ oct_information_bar_background_button_hover }};color:{{ oct_information_bar_color_text_button_hover }};}
 </style>
 {% endif %}
-<!-- ========== HEADER AND NAV STRUCTURE UPDATED ========== -->
+
 <header>
   <div class="container-fluid container-sm">
     <div class="row align-items-center flex-column flex-md-row">
-        {% if logo %}
-        <div class="col-md-3 col-lg-3 order-0">
-            <div id="logo" class="d-flex align-items-center justify-content-center justify-content-md-start">
-                {% if oct_home is defined and oct_home %}
-                <span><img src="{{ logo }}" title="{{ name }}" alt="{{ name }}" class="img-fluid" /></span>
-                {% else %}
-                <a href="{{ home }}">
-                    <img src="{{ logo }}" title="{{ name }}" alt="{{ name }}" class="img-fluid" />
-                </a>
+		{% if logo %}
+    	<div class="col-md-3 col-lg-3 d-none d-lg-block order-0">
+            <div id="logo" class="d-flex align-items-center justify-content-center h-100" style="min-height: 80px; padding: 10px;">
+    			{% if oct_home is defined and oct_home %}
+    			<span><img src="{{ logo }}" title="{{ name }}" alt="{{ name }}" class="img-fluid" style="max-height: 60px; width: auto;"{% if logo_width is defined and logo_width %} width="{{ logo_width }}"{% endif %}{% if logo_height is defined and logo_height %} height="{{ logo_height }}"{% endif %} /></span>
+    			{% else %}
+    			<a href="{{ home }}">
+    				<img src="{{ logo }}" title="{{ name }}" alt="{{ name }}" class="img-fluid" style="max-height: 60px; width: auto;"{% if logo_width is defined and logo_width %} width="{{ logo_width }}"{% endif %}{% if logo_height is defined and logo_height %} height="{{ logo_height }}"{% endif %} />
+    			</a>
+    			{% endif %}
+            </div>
+		</div>
+		{% else %}
+		<h1><a href="{{ home }}">{{ name }}</a></h1>
+		{% endif %}
+        <div class="col-12 col-md-5 col-lg-5 order-3 order-md-2 d-flex align-items-center">
+            <div style="flex: 2;">{{ search }}</div>
+            
+            <!-- Mobile account icon -->
+            <div class="d-lg-none ml-3">
+                {% if oct_remarket_data.header_account is defined %}
+                    {% if logged %}
+                    <a href="{{ account }}" class="rm-header-icon rm-header-icon-account" title="{{ text_account }}" style="color: #333; text-decoration: none;">
+                        <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-account" alt="{{ text_account }}" width="24" height="24" style="filter: brightness(0);">
+                    </a>
+                    {% else %}
+                    <div onclick="octPopupLogin();" class="rm-header-icon rm-header-icon-account" title="Вхід" style="cursor: pointer; color: #333;">
+                        <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-account" alt="Вхід" width="24" height="24" style="filter: brightness(0);">
+                    </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+            <div class="rm-header-address d-none d-lg-block ml-4" style="flex-shrink: 0;">
+                {% if oct_remarket_data.contact_address[oct_lang_id] is defined and oct_remarket_data.contact_address[oct_lang_id] %}
+                <a href="https://books-toys.com.ua/ua-contact-us" class="rm-header-address-link" style="font-size: 16px; font-weight: 500; color: inherit; text-decoration: none;">наші магазини</a>
                 {% endif %}
             </div>
         </div>
-        {% else %}
-        <div class="col-md-3 col-lg-3 order-0">
-             <h1><a href="{{ home }}">{{ name }}</a></h1>
-        </div>
-        {% endif %}
-        
-        <div class="col-12 col-md-6 col-lg-4 order-3 order-md-2">
-            {{ search }}
-        </div>
-
-        {% if oct_contact_telephones is defined and oct_contact_telephones is not empty %}
-        <div class="col-6 col-md-3 col-lg-2 d-none d-md-flex justify-content-center order-2 order-md-3">
-          <div class="rm-header-phones d-flex align-items-center">
-            <div class="rm-header-phones-list">
-            {% for oct_contact_telephone in oct_contact_telephones %}
-            <a href="tel:{{ oct_contact_telephone|replace({" " : "", "-" : "", "(" : "", ")" : ""}) }}" class="rm-header-phones-list-item">{{ oct_contact_telephone }}</a>
-            {% endfor %}
-            <a href="{{ contact }}" class="shops-address-link">Адреси магазинів</a>
+        <div class="col-md-4 col-lg-4 d-none d-lg-flex justify-content-end align-items-center order-2 order-md-3">
+            
+            <!-- Free space -->
+            <div style="flex: 0.5;"></div>
+            
+            <!-- Icons block: viewed, wishlist, cart -->
+            <div class="d-flex align-items-center mr-3">
+                {% if product_views_count is defined and product_views_count %}
+                <div onclick="rmSidebar('{{ oct_product_views }}', 'viewed');" class="rm-header-icon rm-header-icon-viewed mr-2" title="{{ oct_product_views }}" style="cursor: pointer; color: #333;">
+                    <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-viewed" alt="{{ oct_product_views }}" width="24" height="24" style="filter: brightness(0);">
+                    <span class="rm-header-quantity" style="color: #333;">{{ product_views_count }}</span>
+                </div>
+                {% endif %}
+                {% if oct_bar_data.show_wishlist is defined and oct_bar_data.show_wishlist %}
+                <a href="{{ wishlist_link }}" class="rm-header-icon rm-header-icon-wishlist mr-2" title="{{ fixed_bar_wishlist }}" style="color: #333; text-decoration: none;">
+                    <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-wishlist" alt="{{ fixed_bar_wishlist }}" width="24" height="20" style="filter: brightness(0);">
+                    <span class="rm-header-quantity" style="color: #333;">{{ wishlist_total }}</span>
+                </a>
+                {% endif %}
+                <div class="rm-header-cart">
+                    {{ cart }}
+                </div>
             </div>
-          </div>
-        </div>
-        {% endif %}
-
-        <div class="col-6 col-md-3 col-lg-3 d-flex justify-content-end align-items-center order-4">
+            
+            <!-- Login button -->
             {% if oct_remarket_data.header_account is defined %}
-            <div class="header-account mr-3 d-none d-lg-flex">
-                <div class="top-nav-account-links-item rm-dropdown-box">
-                    {% if logged %}
-                    <span title="{{ text_account }}" class="rm-dropdown-toggle d-flex align-items-center login-link">
-                         <img src="catalog/view/theme/oct_remarket/img/sprite.svg#include--account-icon-013" alt="" width="32" height="32">
-                        <span>{{ text_account }}</span>
+            <div class="rm-header-account">
+                {% if logged %}
+                <div class="rm-dropdown-box">
+                    <span title="{{ text_account }}" class="rm-dropdown-toggle d-flex align-items-center" style="color: #333;">
+                        <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-account" alt="{{ text_account }}" width="20" height="22" class="mr-2" style="filter: brightness(0);">
+                        <span style="color: #333;">{{ text_account }}</span>
                     </span>
                     <div class="rm-dropdown">
                         <div class="rm-dropdown-inner">
                             <ul class="list-unstyled">
-                                <li><a href="{{ account }}">{{ text_account }}</a></li>
-                                <li><a href="{{ order }}">{{ text_order }}</a></li>
-                                <li><a href="{{ logout }}">{{ text_logout }}</a></li>
-                            </ul>
+            		            <li><a href="{{ account }}">{{ text_account }}</a></li>
+            		            <li><a href="{{ order }}">{{ text_order }}</a></li>
+            		            <li><a href="{{ logout }}">{{ text_logout }}</a></li>
+            				</ul>
                         </div>
                     </div>
-                    {% else %}
-                    <span onclick="octPopupLogin();" title="Вхід" class="d-flex align-items-center login-link" role="button" aria-haspopup="true">
-                        <img src="catalog/view/theme/oct_remarket/img/sprite.svg#include--account-icon-013" alt="" width="32" height="32">
-                        <span>Вхід</span>
-                    </span>
-                    {% endif %}
                 </div>
+                {% else %}
+                <div onclick="octPopupLogin();" title="Вхід" class="d-flex align-items-center oct-fixed-bar-item oct-fixed-bar-item-viewed" role="button" aria-haspopup="true" style="cursor: pointer; color: #333;">
+                    <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-account" alt="Вхід" width="20" height="22" class="mr-2" style="filter: brightness(0);">
+                    <span style="color: #333;">Вхід</span>
+                </div>
+                {% endif %}
             </div>
             {% endif %}
-            {{ cart }}
+            
         </div>
         {{ menu }}
     </div>
@@ -299,65 +258,31 @@ $('#oct-infobar-btn').on('click', function () {
 
 {% if oct_remarket_data.header_cur is defined or oct_remarket_data.header_lang is defined or oct_remarket_data.header_account is defined or oct_remarket_data.header_menu is defined %}
 <nav id="top" class="top-nav d-none d-lg-block">
-    <div class="container d-flex align-items-center">
-        <!-- Menu toggle button moved here -->
-        <div class="top-nav-menu-btn">
-            <button id="menu_toggle_button" type="button" aria-label="Menu" class="rm-btn primary d-flex align-items-center justify-content-between">
-                <span class="rm-btn-icon">
-                    <img class="catalog-icon" src="catalog/view/theme/oct_remarket/img/sprite.svg#include--footer-catalog-icon" alt="" width="14" height="14">
-                    <img class="close-icon" src="catalog/view/theme/oct_remarket/img/sprite.svg#include--close-catalog-icon" alt="" width="14" height="14">
-                </span>
-                <span class="rm-btn-text">{{ oct_menu_catalog }}</span>
-            </button>
+	<div class="container d-flex justify-content-between">
+        <div class="d-flex align-items-center">
+            <ul class="top-nav-info-list list-unstyled d-flex align-items-center text-uppercase">
+                <li class="mr-3">
+                    <a href="#" id="menu_toggle_button" aria-label="Menu" onmouseover="$('#menu_toggle_button').trigger('click');">
+                        <img class="catalog-icon" src="catalog/view/theme/oct_remarket/img/sprite.svg#include--footer-catalog-icon" alt="" width="18" height="18">
+                        {{ oct_menu_catalog }}
+                    </a>
+                </li>
+                {% if header_informations is defined and header_informations is not empty %}
+                    {% for header_link in header_informations %}
+                    <li class="mr-3"><a href="{{ header_link.href }}">{{ header_link.title }}</a></li>
+                    {% endfor %}
+                {% endif %}
+            </ul>
         </div>
-        {% if header_informations is defined and header_informations is not empty %}
-        <ul class="top-nav-info-list list-unstyled d-flex align-items-center text-uppercase">
-            {% for header_link in header_informations %}
-            <li><a href="{{ header_link.href }}">{{ header_link.title }}</a></li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        <div class="top-nav-account-links list-unstyled d-flex">
-            {{ language }}
-            {{ currency }}
-        </div>
-    </div>
+        
+		<div class="top-nav-account-links list-unstyled d-flex">
+			{{ language }}
+			{{ currency }}
+		</div>
+	</div>
 </nav>
 {% endif %}
-
-<!-- ========== SCRIPT TO FIX OVERLAY POSITION ========== -->
-<script>
-$(document).ready(function() {
-    function octPositionMenu() {
-        // Run only for desktop view (>= 992px)
-        if ($(window).width() >= 992 && $('#rm_overlay').length && typeof $('#rm-menu') !== 'undefined' && $('#rm-menu') !== null) {
-            var headerHeight = $('header').first().outerHeight(true) || 0;
-            var navHeight = $('#top').first().outerHeight(true) || 0;
-            var newTopPosition = headerHeight + navHeight;
-
-            // Update the top position for the overlay and the mega menu
-            $('#rm_overlay').css('top', newTopPosition + 'px');
-            $('#rm-menu').css('top', newTopPosition + 'px');
-            
-            // Adjust overlay height to prevent scrolling the whole page
-            $('#rm_overlay').css('height', 'calc(100vh - ' + newTopPosition + 'px)');
-
-        } else {
-            // Reset styles for mobile view
-            $('#rm_overlay').css({ 'top': '', 'height': '' });
-            if(typeof $('#rm-menu') !== 'undefined' && $('#rm-menu') !== null) {
-                $('#rm-menu').css('top', '');
-            }
-        }
-    }
-
-    // Run on page load
-    octPositionMenu();
-
-    // Re-run on window resize
-    $(window).on('resize', octPositionMenu);
-});
-</script>
-<!-- ========== END OF SCRIPT ========== -->
-</body>
-</html>
+<style>
+/* Menu should appear over other elements */
+.top-nav { z-index: 1000; position: relative; }
+</style>

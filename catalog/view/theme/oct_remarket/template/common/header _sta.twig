@@ -94,7 +94,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         display: none;
     }
     
-    /* 2. Push account links to the far right in Nav */
+    /* 2. Push account links to the far right */
     .top-nav-account-links {
         margin-left: auto;
     }
@@ -110,17 +110,16 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         width: auto !important;
     }
 
-    /* 5. Style for login/account link in Header */
-    .header-account .login-link {
+    /* 5. Style for login link */
+    .top-nav-account-links-item .login-link {
         color: #000000 !important;
         text-decoration: none !important;
         font-weight: 500;
-        cursor: pointer;
     }
-    .header-account .login-link:hover {
+    .top-nav-account-links-item .login-link:hover {
         color: #006B50 !important; /* using the button color for hover */
     }
-    .header-account .login-link img {
+    .login-link img {
         margin-right: 8px;
     }
 
@@ -246,7 +245,7 @@ $('#oct-infobar-btn').on('click', function () {
         </div>
         {% endif %}
         
-        <div class="col-12 col-md-6 col-lg-4 order-3 order-md-2">
+        <div class="col-12 col-md-6 col-lg-5 order-3 order-md-2">
             {{ search }}
         </div>
 
@@ -263,33 +262,7 @@ $('#oct-infobar-btn').on('click', function () {
         </div>
         {% endif %}
 
-        <div class="col-6 col-md-3 col-lg-3 d-flex justify-content-end align-items-center order-4">
-            {% if oct_remarket_data.header_account is defined %}
-            <div class="header-account mr-3 d-none d-lg-flex">
-                <div class="top-nav-account-links-item rm-dropdown-box">
-                    {% if logged %}
-                    <span title="{{ text_account }}" class="rm-dropdown-toggle d-flex align-items-center login-link">
-                         <img src="catalog/view/theme/oct_remarket/img/sprite.svg#include--account-icon-013" alt="" width="32" height="32">
-                        <span>{{ text_account }}</span>
-                    </span>
-                    <div class="rm-dropdown">
-                        <div class="rm-dropdown-inner">
-                            <ul class="list-unstyled">
-                                <li><a href="{{ account }}">{{ text_account }}</a></li>
-                                <li><a href="{{ order }}">{{ text_order }}</a></li>
-                                <li><a href="{{ logout }}">{{ text_logout }}</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    {% else %}
-                    <span onclick="octPopupLogin();" title="Вхід" class="d-flex align-items-center login-link" role="button" aria-haspopup="true">
-                        <img src="catalog/view/theme/oct_remarket/img/sprite.svg#include--account-icon-013" alt="" width="32" height="32">
-                        <span>Вхід</span>
-                    </span>
-                    {% endif %}
-                </div>
-            </div>
-            {% endif %}
+        <div class="col-6 col-md-2 col-lg-2 d-flex justify-content-end align-items-center order-4">
             {{ cart }}
         </div>
         {{ menu }}
@@ -320,6 +293,27 @@ $('#oct-infobar-btn').on('click', function () {
         <div class="top-nav-account-links list-unstyled d-flex">
             {{ language }}
             {{ currency }}
+            {% if oct_remarket_data.header_account is defined %}
+            <div class="top-nav-account-links-item rm-dropdown-box">
+                {% if logged %}
+                <span title="{{ text_account }}" class="rm-dropdown-toggle d-flex align-items-center">{{ text_account }}</span>
+                <div class="rm-dropdown">
+                    <div class="rm-dropdown-inner">
+                        <ul class="list-unstyled">
+                            <li><a href="{{ account }}">{{ text_account }}</a></li>
+                            <li><a href="{{ order }}">{{ text_order }}</a></li>
+                            <li><a href="{{ logout }}">{{ text_logout }}</a></li>
+                        </ul>
+                    </div>
+                </div>
+                {% else %}
+                <span onclick="octPopupLogin();" title="Вхід" class="d-flex align-items-center login-link" role="button" aria-haspopup="true">
+                    <img src="/catalog/view/theme/oct_remarket/img/sprite.svg#include--account-icon-013" alt="" width="20" height="22" style="margin-right: 8px;">
+                    <span>Вхід</span>
+                </span>
+                {% endif %}
+            </div>
+            {% endif %}
         </div>
     </div>
 </nav>

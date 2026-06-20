@@ -1,0 +1,202 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <button type="submit" form="form-module" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if error_warning %}
+    <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    {% if success %}
+    <div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> {{ success }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+      </div>
+      <div class="panel-body">
+        
+        <!-- Instructions Block -->
+        <div class="well">
+            <h4><i class="fa fa-info-circle"></i> {{ text_instructions_title }}</h4>
+            <p>{{ text_instructions_desc }}</p>
+            <ul>
+                <li>{{ text_rule_1 }}</li>
+                <li>{{ text_rule_2 }}</li>
+                <li>{{ text_rule_3 }}</li>
+                <li>{{ text_rule_4 }}</li>
+                <li>{{ text_rule_5 }}</li>
+            </ul>
+            <p>{{ text_rule_footer }}</p>
+        </div>
+
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-module" class="form-horizontal">
+            
+            <!-- Settings Block -->
+            <fieldset>
+                <legend>Settings</legend>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-upd-name">{{ entry_upd_name }}</label>
+                    <div class="col-sm-10">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="csv_booktoys_upd_name" value="1" id="input-upd-name" {% if csv_booktoys_upd_name %}checked="checked"{% endif %} />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-upd-desc">{{ entry_upd_desc }}</label>
+                    <div class="col-sm-10">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="csv_booktoys_upd_desc" value="1" id="input-upd-desc" {% if csv_booktoys_upd_desc %}checked="checked"{% endif %} />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-upd-cat">{{ entry_upd_cat }}</label>
+                    <div class="col-sm-10">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="csv_booktoys_upd_cat" value="1" id="input-upd-cat" {% if csv_booktoys_upd_cat %}checked="checked"{% endif %} />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-upd-attr">{{ entry_upd_attr }}</label>
+                    <div class="col-sm-10">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="csv_booktoys_upd_attr" value="1" id="input-upd-attr" {% if csv_booktoys_upd_attr %}checked="checked"{% endif %} />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-upd-status">{{ entry_upd_status }}</label>
+                    <div class="col-sm-10">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="csv_booktoys_upd_status" value="1" id="input-upd-status" {% if csv_booktoys_upd_status %}checked="checked"{% endif %} />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-ignore-empty">{{ entry_ignore_empty }}</label>
+                    <div class="col-sm-10">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="csv_booktoys_ignore_empty" value="1" id="input-ignore-empty" {% if csv_booktoys_ignore_empty %}checked="checked"{% endif %} />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <hr />
+
+            <!-- Import Block -->
+            <fieldset>
+                <legend>Import</legend>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-file">Upload CSV File</label>
+                    <div class="col-sm-10">
+                        <div class="input-group">
+                            <input type="file" name="upload" id="input-file" class="form-control" accept=".csv" />
+                            <span class="input-group-btn">
+                                <button type="button" id="button-import" class="btn btn-success"><i class="fa fa-upload"></i> {{ button_import }}</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+
+        </form>
+
+        <div id="import-report" style="display:none; margin-top:20px;">
+            <div class="alert alert-info">
+                <h4><i class="fa fa-bar-chart"></i> Import Results</h4>
+                <div id="report-content" style="white-space: pre-wrap;"></div>
+            </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript"><!--
+$('#button-import').on('click', function() {
+    var formData = new FormData($('#form-module')[0]);
+
+    $.ajax({
+        url: 'index.php?route=octemplates/module/csv_booktoys/import&user_token={{ user_token }}',
+        type: 'post',
+        dataType: 'json',
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false,
+        beforeSend: function() {
+            $('#button-import').button('loading');
+            $('#import-report').hide();
+        },
+        complete: function() {
+            $('#button-import').button('reset');
+        },
+        success: function(json) {
+            $('.alert-dismissible').remove();
+
+            if (json['error']) {
+                $('#content > .container-fluid').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> ' + json['error'] + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+            }
+
+            if (json['success']) {
+                let reportHtml = '<strong>' + json['success'] + '</strong>\n';
+                if (json['errors']) {
+                    reportHtml += '<br/><strong>Errors/Warnings:</strong>\n' + json['errors'];
+                }
+                
+                if (json['details'] && json['details'].length > 0) {
+                    reportHtml += '<hr/><h5>Detailed Preview Breakdown:</h5>';
+                    reportHtml += '<table class="table table-bordered table-hover">';
+                    reportHtml += '<thead><tr><th>SKU</th><th>Actions Taken</th></tr></thead><tbody>';
+                    for (let i = 0; i < json['details'].length; i++) {
+                        reportHtml += '<tr><td>' + json['details'][i]['sku'] + '</td><td>' + json['details'][i]['updated'] + '</td></tr>';
+                    }
+                    reportHtml += '</tbody></table>';
+                }
+
+                $('#report-content').html(reportHtml);
+                $('#import-report').fadeIn();
+            }
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+    });
+});
+//--></script>
+{{ footer }}

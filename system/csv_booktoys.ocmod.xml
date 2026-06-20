@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <code>csv_booktoys_core_mods</code>
+    <name>csv_booktoys - Core Modifications</name>
+    <version>1.0.0</version>
+    <author>Developer</author>
+    <link>https://octemplates.net/</link>
+    <file path="admin/controller/common/column_left.php">
+        <operation>
+            <search><![CDATA[if ($this->user->hasPermission('access', 'catalog/product')) {]]></search>
+            <add position="before"><![CDATA[
+            if ($this->user->hasPermission('access', 'octemplates/module/csv_booktoys')) {
+                $this->load->language('octemplates/module/csv_booktoys');
+                $catalog[] = array(
+                    'name'     => $this->language->get('text_csv_booktoys_menu'),
+                    'href'     => $this->url->link('octemplates/module/csv_booktoys', 'user_token=' . $this->session->data['user_token'], true),
+                    'children' => array()
+                );
+            }
+            ]]></add>
+        </operation>
+    </file>
+</modification>

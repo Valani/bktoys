@@ -31,3 +31,4 @@
 catalog/view/theme/*/stylesheet/ocfilter/ocf.cache.*
 catalog/view/theme/oct_remarket/stylesheet/dynamic_stylesheet_*
 catalog/view/theme/oct_remarket/stylesheet/*
+.DS_Store

@@ -189,39 +189,50 @@
                         {% endif %}
                     </div>
                 </div>
-                <div id="product" class="col-md-6 col-lg-6 col-xl-3">
+                <div id="product" class="col-md-12 col-lg-12 col-xl-6">
                     <div class="rm-product-center h-100">
-                        <div class="rm-product-center-info">
-                            {% if manufacturer %}
-                                <div class="rm-product-center-info-item">
-                                    <span class="rm-product-center-info-item-title">{{ text_manufacturer }}</span>
-                                    <span>
-                                        <a href="{{ manufacturers }}">{{ manufacturer }}</a>
-                                    </span>
-                                </div>
-                            {% endif %}
-                            {% if oct_remarket_data.product_model is defined and oct_remarket_data.product_model == 'on' %}
-                                <div class="rm-product-center-info-item">
-                                    <span class="rm-product-center-info-item-title">{{ text_model }}</span>
-                                    <span>{{ model }}</span>
-                                </div>
-                            {% endif %}
-                            {% if review_status %}
-                                <div class="rm-product-center-info-item rm-product-center-info-item-reviews d-flex align-items-center">
-                                    <span class="rm-product-center-info-item-title">{{ oct_product_reviews }}</span>
-                                    <span class="blue-link" id="reviews-quick-view" onclick="$('a[href=\'#product_reviews\']').trigger('click');scrollToElement('.tab-content');">({{ total_reviews }})</span>
-                                    <div class="rm-module-rating-stars d-flex align-items-center">
-                                        {% for i in 1..5 %}
-                                            {% if rating < i %}
-                                                <span class="rm-module-rating-star"></span>
-                                            {% else %}
-                                                <span class="rm-module-rating-star rm-module-rating-star-is"></span>
-                                            {% endif %}
-                                        {% endfor %}
+                        <div class="rm-product-center-info d-flex">
+                            <div class="rm-product-center-info-left flex-grow-1">
+                                {% if manufacturer %}
+                                    <div class="rm-product-center-info-item">
+                                        <span class="rm-product-center-info-item-title">{{ text_manufacturer }}</span>
+                                        <span>
+                                            <a href="{{ manufacturers }}">{{ manufacturer }}</a>
+                                        </span>
                                     </div>
-                                </div>
-                            {% endif %}
-                            <div class="rm-module-stock{% if out_of_stock %} rm-out-of-stock{% endif %}">{{ stock }}</div>
+                                {% endif %}
+                                {% if oct_remarket_data.product_model is defined and oct_remarket_data.product_model == 'on' %}
+                                    <div class="rm-product-center-info-item">
+                                        <span class="rm-product-center-info-item-title">{{ text_model }}</span>
+                                        <span>{{ model }}</span>
+                                    </div>
+                                {% endif %}
+                                {% if review_status %}
+                                    <div class="rm-product-center-info-item rm-product-center-info-item-reviews d-flex align-items-center">
+                                        <span class="rm-product-center-info-item-title">{{ oct_product_reviews }}</span>
+                                        <span class="blue-link" id="reviews-quick-view" onclick="$('a[href=\'#product_reviews\']').trigger('click');scrollToElement('.tab-content');">({{ total_reviews }})</span>
+                                        <div class="rm-module-rating-stars d-flex align-items-center">
+                                            {% for i in 1..5 %}
+                                                {% if rating < i %}
+                                                    <span class="rm-module-rating-star"></span>
+                                                {% else %}
+                                                    <span class="rm-module-rating-star rm-module-rating-star-is"></span>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                <div class="rm-module-stock{% if out_of_stock %} rm-out-of-stock{% endif %}">{{ stock }}</div>
+                            </div>
+                            <div class="rm-product-center-info-right d-flex align-items-center">
+                                {% if manufacturer_image %}
+                                    <div class="rm-product-center-info-item text-center mb-2">
+                                        <a href="{{ manufacturers }}">
+                                            <img src="{{ manufacturer_image }}" alt="{{ manufacturer }}" title="{{ manufacturer }}" class="img-fluid" />
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
                         </div>
                         {% if price %}
                         <div class="rm-product-center-price">
@@ -586,10 +597,34 @@
                                 </script>
                             {% endif %}
                         {% endif %}
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-6 col-xl-3">
-                    <div class="rm-product-right">
+                        
+                        {% if extra_stock_1 is not null or extra_stock_2 is not null %}
+                        <div class="rm-store-availability-sub" style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
+                            <div class="rm-store-availability-title" style="font-weight: bold; font-size: 14px; margin-bottom: 8px;">Наявність в магазинах:</div>
+                            <div class="rm-store-availability-list">
+                                {% if extra_stock_1 is not null %}
+                                <div class="rm-store-availability-item" style="padding: 2px 0; font-size: 14px;">
+                                    {% if extra_stock_1 > 0 %}
+                                        <span><strong>Кос-Анатольського</strong></span>
+                                    {% else %}
+                                        <span style="color: #999;">Кос-Анатольського: немає в наявності</span>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                {% if extra_stock_2 is not null %}
+                                <div class="rm-store-availability-item" style="padding: 2px 0; font-size: 14px;">
+                                    {% if extra_stock_2 > 0 %}
+                                        <span><strong>Зубрівський</strong></span>
+                                    {% else %}
+                                        <span style="color: #999;">Зубрівський: немає в наявності</span>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="rm-product-right">
                         {% if can_buy is not empty %}
             			{{ oct_byoneclick }}
             			{% endif %}
@@ -627,6 +662,7 @@
     					{% if product_js_button is defined and product_js_button %}
     				        <div class="rm-product-social-buttons">{{ product_js_button }}</div>
     				    {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>

@@ -3,8 +3,8 @@
     <code>csv_booktoys_core_mods</code>
     <name>csv_booktoys - Core Modifications</name>
     <version>1.0.0</version>
-    <author>Developer</author>
-    <link>https://octemplates.net/</link>
+    <author>vv</author>
+    <link>andrew.pv.mm@gmail.com</link>
     <file path="admin/controller/common/column_left.php">
         <operation>
             <search><![CDATA[if ($this->user->hasPermission('access', 'catalog/product')) {]]></search>

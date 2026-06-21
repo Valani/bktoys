@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<modification>
+    <name>OCT Remarket Product Layout Customization</name>
+    <code>oct_remarket_product_layout_flex</code>
+    <version>1.0.0</version>
+    <author>vv</author>
+    <link>andrew.pv.mm@gmail.com</link>
+
+    <file path="catalog/view/theme/oct_remarket/template/product/product.twig">
+        <operation error="skip">
+            <search><![CDATA[<div id="product" class="col-md-6 col-lg-6 col-xl-3">]]></search>
+            <add position="replace"><![CDATA[<div id="product" class="col-md-12 col-lg-12 col-xl-6 d-flex flex-column">]]></add>
+        </operation>
+        <!-- Операція 1.1: Видаляємо h-100 щоб блоки могли шикуватися вертикально -->
+        <operation error="skip">
+            <search><![CDATA[<div class="rm-product-center h-100">]]></search>
+            <add position="replace"><![CDATA[<div class="rm-product-center">]]></add>
+        </operation>
+        <!-- Операція 2: Робимо блок інформації d-flex та відкриваємо ліву частину -->
+        <operation error="skip">
+            <search><![CDATA[<div class="rm-product-center-info">]]></search>
+            <add position="replace"><![CDATA[<div class="rm-product-center-info d-flex">
+                        <div class="rm-product-center-info-left flex-grow-1">]]></add>
+        </operation>
+        <!-- Операція 3: Закриваємо ліву частину після блоку наявності (stock) та виводимо логотип бренду праворуч -->
+        <operation error="skip">
+            <search><![CDATA[<div class="rm-module-stock{% if out_of_stock %} rm-out-of-stock{% endif %}">{{ stock }}</div>]]></search>
+            <add position="after"><![CDATA[                        </div>
+                        <div class="rm-product-center-info-right d-flex align-items-center">
+                            {% if manufacturer_image %}
+                                <div class="rm-product-center-info-item text-center mb-2">
+                                    <a href="{{ manufacturers }}">
+                                        <img src="{{ manufacturer_image }}" alt="{{ manufacturer }}" title="{{ manufacturer }}" class="img-fluid" />
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>]]></add>
+        </operation>
+        <!-- Операція 4: Демонтаж «стіни» між блоками та вставка наявності (зберігаємо ваш Regex) -->
+        <operation error="skip">
+            <search regex="true"><![CDATA[~</div>\s*</div>\s*<div class="col-md-6 col-lg-6 col-xl-3">\s*<div class="rm-product-right">~]]></search>
+            <add position="replace"><![CDATA[
+                    </div> {% if extra_stock_1 is not null or extra_stock_2 is not null %}
+                        <div class="rm-store-availability-sub" style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
+                            <div class="rm-store-availability-title" style="font-weight: bold; font-size: 14px; margin-bottom: 8px;">Наявність в магазинах:</div>
+                            <div class="rm-store-availability-list">
+                                {% if extra_stock_1 is not null %}
+                                <div class="rm-store-availability-item" style="padding: 2px 0; font-size: 14px;">
+                                    {% if extra_stock_1 > 0 %}
+                                        <span><strong>Кос-Анатольського</strong></span>
+                                    {% else %}
+                                        <span style="color: #999;">Кос-Анатольського: немає в наявності</span>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                {% if extra_stock_2 is not null %}
+                                <div class="rm-store-availability-item" style="padding: 2px 0; font-size: 14px;">
+                                    {% if extra_stock_2 > 0 %}
+                                        <span><strong>Зубрівський</strong></span>
+                                    {% else %}
+                                        <span style="color: #999;">Зубрівський: немає в наявності</span>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="rm-product-right">
+            ]]></add>
+        </operation>
+    </file>
+</modification>

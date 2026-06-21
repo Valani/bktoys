@@ -9,6 +9,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{ title }}</title>
+<base href="{{ base }}" />
 {% if (oct_remarket_data.open_graph is defined and oct_remarket_data.open_graph) and octOpenGraphs is not empty %}
 {% for octOpenGraph in octOpenGraphs %}
 {% if octOpenGraph.content is not empty %}
@@ -19,6 +20,7 @@
 {% if oct_analytics_google_webmaster_code is defined and oct_analytics_google_webmaster_code is not empty %}
 <meta name="google-site-verification" content="{{ oct_analytics_google_webmaster_code }}" />
 {% endif %}
+<meta name="robots" content="max-image-preview:large">
 {% if oct_analytics_googletm_code is defined and oct_analytics_googletm_code is not empty %}
 <!-- Google Tag Manager -->
 <script id="octGtm">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -28,7 +30,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','{{ oct_analytics_googletm_code }}');</script>
 <!-- End Google Tag Manager -->
 {% endif %}
-<base href="{{ base }}" />
+{% if home_microdata is defined and home_microdata %}
+<script type="application/ld+json">
+{{ home_microdata | raw }}
+</script>
+{% endif %}
 {% if robots %}
 <meta name="robots" content="{{ robots }}" />
 {% endif %}
@@ -72,18 +78,30 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </script>
 <!-- ========== CUSTOM STYLES FOR HEADER ========== -->
 <style>
+:root {
+    --accent-color: #006B50;
+    --accent-hover: #00523e;
+}
+
 @media (min-width: 992px) {
-    /* 1. Style for the moved menu button */
+    /* Fallback для уникнення CLS при завантаженні (зсуву макету меню) */
+    #rm_overlay, #rm-menu {
+        top: 135px;
+    }
+
+    /* Стиль для перенесеної кнопки меню */
     #menu_toggle_button.rm-btn.primary {
-        background-color: #006B50;
-        border-color: #006B50;
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+        transition: background-color 0.2s ease, border-color 0.2s ease;
     }
 
     #menu_toggle_button.rm-btn.primary:hover {
-        background-color: #00523e; /* A slightly darker hover color */
+        background-color: var(--accent-hover);
+        border-color: var(--accent-hover);
     }
 
-    /* Bugfix for toggle button icons */
+    /* Виправлення іконок для кнопки меню */
     #menu_toggle_button .close-icon {
         display: none;
     }
@@ -93,47 +111,33 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     #menu_toggle_button.active .catalog-icon {
         display: none;
     }
-    
-    /* 2. Push account links to the far right in Nav */
-    .top-nav-account-links {
-        margin-left: auto;
-    }
-    
-    /* 3. Add some space between button and info links */
-    .top-nav-info-list {
-        margin-left: 20px;
-    }
 
-    /* 4. Increase logo size */
+    /* Збільшення та утримання пропорцій логотипу */
     #logo img {
         max-height: 55px !important;
         width: auto !important;
     }
 
-    /* 5. Style for login/account link in Header */
+    /* Стиль посилання авторизації у шапці */
     .header-account .login-link {
         color: #000000 !important;
-        text-decoration: none !important;
         font-weight: 500;
         cursor: pointer;
+        transition: color 0.2s ease;
     }
     .header-account .login-link:hover {
-        color: #006B50 !important; /* using the button color for hover */
-    }
-    .header-account .login-link img {
-        margin-right: 8px;
+        color: var(--accent-color) !important;
     }
 
-    /* 6. Style for "Адреси магазинів" link */
+    /* Посилання на адреси магазинів */
     .rm-header-phones-list .shops-address-link {
         font-size: 16px;
         font-weight: 500;
-        text-decoration: none;
         color: #333;
+        transition: color 0.2s ease;
     }
     .rm-header-phones-list .shops-address-link:hover {
-        color: #006B50;
-        text-decoration: underline;
+        color: var(--accent-color);
     }
 }
 </style>
@@ -149,36 +153,36 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <div class="oct-fixed-bar fixed-{{ bar_position }} d-none d-lg-block">
     {% if oct_bar_data.show_cart is defined and oct_bar_data.show_cart %}
     <div onclick="{% if oct_popup_cart_status is defined and oct_popup_cart_status %}octPopupCart();{% else %}location = '{{ shopping_cart }}';{% endif %}" class="oct-fixed-bar-item oct-fixed-bar-item-cart" title="{{ fixed_bar_cart }}">
-        <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-cart" alt="{{ fixed_bar_cart }}" width="24" height="24">
+        <img src="{{ base }}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-cart" alt="{{ fixed_bar_cart }}" width="24" height="24">
         <span class="oct-fixed-bar-quantity oct-fixed-bar-quantity-cart">{{ cart_total_bar }}</span>
     </div>
     {% endif %}
     {% if oct_bar_data.show_compare is defined and oct_bar_data.show_compare %}
     <a href="{{ compare_link }}" class="oct-fixed-bar-item oct-fixed-bar-item-compare" title="{{ fixed_bar_compare }}">
-        <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-compare" alt="{{ fixed_bar_compare }}" width="24" height="24">
+        <img src="{{ base }}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-compare" alt="{{ fixed_bar_compare }}" width="24" height="24">
         <span class="oct-fixed-bar-quantity oct-fixed-bar-compare-quantity">{{ compare_total }}</span>
     </a>
     {% endif %}
     {% if oct_bar_data.show_wishlist is defined and oct_bar_data.show_wishlist %}
     <a href="{{ wishlist_link }}" class="oct-fixed-bar-item oct-fixed-bar-item-wishlist" title="{{ fixed_bar_wishlist }}">
-        <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-wishlist" alt="{{ fixed_bar_wishlist }}" width="24" height="20">
+        <img src="{{ base }}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-wishlist" alt="{{ fixed_bar_wishlist }}" width="24" height="20">
         <span class="oct-fixed-bar-quantity oct-fixed-bar-wishlist-quantity">{{ wishlist_total }}</span>
     </a>
     {% endif %}
     {% if product_views_count is defined and product_views_count %}
     <div onclick="rmSidebar('{{ oct_product_views }}', 'viewed');" class="oct-fixed-bar-item oct-fixed-bar-item-viewed" title="{{ oct_product_views }}">
-        <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-viewed" alt="{{ oct_product_views }}" width="24" height="24">
+        <img src="{{ base }}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-viewed" alt="{{ oct_product_views }}" width="24" height="24">
         <span class="oct-fixed-bar-quantity">{{ product_views_count }}</span>
     </div>
     {% endif %}
     {% if oct_bar_data.show_account is defined and oct_bar_data.show_account %}
         {% if account_link %}
         <a href="{{ account_link }}" class="oct-fixed-bar-item oct-fixed-bar-item-viewed" title="{{ text_account }}">
-            <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-account" alt="{{ text_account }}" width="20" height="22">
+            <img src="{{ base }}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-account" alt="{{ text_account }}" width="20" height="22">
         </a>
         {% else %}
         <div onclick="octPopupLogin();" class="oct-fixed-bar-item oct-fixed-bar-item-viewed" title="{{ text_account }}">
-            <img src="{{ base}}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-account" alt="{{ text_account }}" width="20" height="22">
+            <img src="{{ base }}catalog/view/theme/oct_remarket/img/sprite.svg#include--fixed-bar-account" alt="{{ text_account }}" width="20" height="22">
         </div>
         {% endif %}
     {% endif %}
@@ -187,7 +191,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 {{ oct_mobile_sidebar }}
 <div id="rm_sidebar" class="rm-sidebar">
     <div class="rm-sidebar-content">
-        <div class="rm-sidebar-title d-flex alig-items-center justify-content-between">
+        <div class="rm-sidebar-title d-flex align-items-center justify-content-between">
             <span class="rm-sidebar-title-text">{{ oct_menu }}</span>
             <span class="rm-sidebar-title-close modal-close">
                 <span aria-hidden="true" class="modal-close-icon modal-close-left"></span>
@@ -224,7 +228,8 @@ $('#oct-infobar-btn').on('click', function () {
 #oct-infobar-btn:hover {background:{{ oct_information_bar_background_button_hover }};color:{{ oct_information_bar_color_text_button_hover }};}
 </style>
 {% endif %}
-<!-- ========== HEADER AND NAV STRUCTURE UPDATED ========== -->
+
+<!-- ========== HEADER STRUCTURE OPTIMIZED ========== -->
 <header>
   <div class="container-fluid container-sm">
     <div class="row align-items-center flex-column flex-md-row">
@@ -232,10 +237,10 @@ $('#oct-infobar-btn').on('click', function () {
         <div class="col-md-3 col-lg-3 order-0">
             <div id="logo" class="d-flex align-items-center justify-content-center justify-content-md-start">
                 {% if oct_home is defined and oct_home %}
-                <span><img src="{{ logo }}" title="{{ name }}" alt="{{ name }}" class="img-fluid" /></span>
+                <span><img src="{{ logo }}" title="{{ name }}" alt="{{ name }}" class="img-fluid" {% if logo_width is defined and logo_width %} width="{{ logo_width }}"{% endif %}{% if logo_height is defined and logo_height %} height="{{ logo_height }}"{% endif %} /></span>
                 {% else %}
                 <a href="{{ home }}">
-                    <img src="{{ logo }}" title="{{ name }}" alt="{{ name }}" class="img-fluid" />
+                    <img src="{{ logo }}" title="{{ name }}" alt="{{ name }}" class="img-fluid" {% if logo_width is defined and logo_width %} width="{{ logo_width }}"{% endif %}{% if logo_height is defined and logo_height %} height="{{ logo_height }}"{% endif %} />
                 </a>
                 {% endif %}
             </div>
@@ -245,31 +250,32 @@ $('#oct-infobar-btn').on('click', function () {
              <h1><a href="{{ home }}">{{ name }}</a></h1>
         </div>
         {% endif %}
-        
-        <div class="col-12 col-md-6 col-lg-4 order-3 order-md-2">
+
+        <!-- Оптимізація ширини пошуку на планшетах для уникнення зсувів сітки -->
+        <div class="col-12 col-md-5 col-lg-4 order-3 order-md-2">
             {{ search }}
         </div>
 
         {% if oct_contact_telephones is defined and oct_contact_telephones is not empty %}
-        <div class="col-6 col-md-3 col-lg-2 d-none d-md-flex justify-content-center order-2 order-md-3">
+        <div class="col-6 col-md-2 col-lg-2 d-none d-md-flex justify-content-center order-2 order-md-3">
           <div class="rm-header-phones d-flex align-items-center">
             <div class="rm-header-phones-list">
             {% for oct_contact_telephone in oct_contact_telephones %}
             <a href="tel:{{ oct_contact_telephone|replace({" " : "", "-" : "", "(" : "", ")" : ""}) }}" class="rm-header-phones-list-item">{{ oct_contact_telephone }}</a>
             {% endfor %}
-            <a href="{{ contact }}" class="shops-address-link">Адреси магазинів</a>
+            <a href="{{ contact }}" class="shops-address-link text-decoration-none">Адреси магазинів</a>
             </div>
           </div>
         </div>
         {% endif %}
 
-        <div class="col-6 col-md-3 col-lg-3 d-flex justify-content-end align-items-center order-4">
+        <div class="col-6 col-md-2 col-lg-3 d-flex justify-content-end align-items-center order-4">
             {% if oct_remarket_data.header_account is defined %}
             <div class="header-account mr-3 d-none d-lg-flex">
                 <div class="top-nav-account-links-item rm-dropdown-box">
                     {% if logged %}
                     <span title="{{ text_account }}" class="rm-dropdown-toggle d-flex align-items-center login-link">
-                         <img src="catalog/view/theme/oct_remarket/img/sprite.svg#include--account-icon-013" alt="" width="32" height="32">
+                         <img src="{{ base }}catalog/view/theme/oct_remarket/img/sprite.svg#include--account-icon-013" alt="" width="32" height="32" class="mr-2">
                         <span>{{ text_account }}</span>
                     </span>
                     <div class="rm-dropdown">
@@ -283,7 +289,7 @@ $('#oct-infobar-btn').on('click', function () {
                     </div>
                     {% else %}
                     <span onclick="octPopupLogin();" title="Вхід" class="d-flex align-items-center login-link" role="button" aria-haspopup="true">
-                        <img src="catalog/view/theme/oct_remarket/img/sprite.svg#include--account-icon-013" alt="" width="32" height="32">
+                        <img src="{{ base }}catalog/view/theme/oct_remarket/img/sprite.svg#include--account-icon-013" alt="" width="32" height="32" class="mr-2">
                         <span>Вхід</span>
                     </span>
                     {% endif %}
@@ -300,24 +306,26 @@ $('#oct-infobar-btn').on('click', function () {
 {% if oct_remarket_data.header_cur is defined or oct_remarket_data.header_lang is defined or oct_remarket_data.header_account is defined or oct_remarket_data.header_menu is defined %}
 <nav id="top" class="top-nav d-none d-lg-block">
     <div class="container d-flex align-items-center">
-        <!-- Menu toggle button moved here -->
+        <!-- Кнопку меню перенесено сюди -->
         <div class="top-nav-menu-btn">
             <button id="menu_toggle_button" type="button" aria-label="Menu" class="rm-btn primary d-flex align-items-center justify-content-between">
                 <span class="rm-btn-icon">
-                    <img class="catalog-icon" src="catalog/view/theme/oct_remarket/img/sprite.svg#include--footer-catalog-icon" alt="" width="14" height="14">
-                    <img class="close-icon" src="catalog/view/theme/oct_remarket/img/sprite.svg#include--close-catalog-icon" alt="" width="14" height="14">
+                    <img class="catalog-icon" src="{{ base }}catalog/view/theme/oct_remarket/img/sprite.svg#include--footer-catalog-icon" alt="" width="14" height="14">
+                    <img class="close-icon" src="{{ base }}catalog/view/theme/oct_remarket/img/sprite.svg#include--close-catalog-icon" alt="" width="14" height="14">
                 </span>
                 <span class="rm-btn-text">{{ oct_menu_catalog }}</span>
             </button>
         </div>
         {% if header_informations is defined and header_informations is not empty %}
-        <ul class="top-nav-info-list list-unstyled d-flex align-items-center text-uppercase">
+        <!-- Замінено margin-left у CSS на клас ml-lg-4 для системності сітки -->
+        <ul class="top-nav-info-list list-unstyled d-flex align-items-center text-uppercase ml-lg-4">
             {% for header_link in header_informations %}
             <li><a href="{{ header_link.href }}">{{ header_link.title }}</a></li>
             {% endfor %}
         </ul>
         {% endif %}
-        <div class="top-nav-account-links list-unstyled d-flex">
+        <!-- Замінено margin-left у CSS на клас ml-auto -->
+        <div class="top-nav-account-links list-unstyled d-flex ml-auto">
             {{ language }}
             {{ currency }}
         </div>
@@ -325,39 +333,45 @@ $('#oct-infobar-btn').on('click', function () {
 </nav>
 {% endif %}
 
-<!-- ========== SCRIPT TO FIX OVERLAY POSITION ========== -->
+<!-- ========== SCRIPT TO FIX OVERLAY POSITION (OPTIMIZED) ========== -->
 <script>
 $(document).ready(function() {
     function octPositionMenu() {
-        // Run only for desktop view (>= 992px)
-        if ($(window).width() >= 992 && $('#rm_overlay').length && typeof $('#rm-menu') !== 'undefined' && $('#rm-menu') !== null) {
-            var headerHeight = $('header').first().outerHeight(true) || 0;
-            var navHeight = $('#top').first().outerHeight(true) || 0;
-            var newTopPosition = headerHeight + navHeight;
+        // Запускаємо лише для десктопного перегляду (>= 992px)
+        if ($(window).width() >= 992) {
+            var $overlay = $('#rm_overlay');
+            var $menu = $('#rm-menu');
 
-            // Update the top position for the overlay and the mega menu
-            $('#rm_overlay').css('top', newTopPosition + 'px');
-            $('#rm-menu').css('top', newTopPosition + 'px');
-            
-            // Adjust overlay height to prevent scrolling the whole page
-            $('#rm_overlay').css('height', 'calc(100vh - ' + newTopPosition + 'px)');
+            if ($overlay.length && $menu.length) {
+                var headerHeight = $('header').first().outerHeight(true) || 0;
+                var navHeight = $('#top').first().outerHeight(true) || 0;
+                var newTopPosition = headerHeight + navHeight;
 
+                // Оновлюємо позицію для оверлею та мега-меню
+                $overlay.css('top', newTopPosition + 'px');
+                $menu.css('top', newTopPosition + 'px');
+
+                // Налаштовуємо висоту оверлею, щоб запобігти скролу всієї сторінки
+                $overlay.css('height', 'calc(100vh - ' + newTopPosition + 'px)');
+            }
         } else {
-            // Reset styles for mobile view
+            // Скидаємо стилі для мобільної версії
             $('#rm_overlay').css({ 'top': '', 'height': '' });
-            if(typeof $('#rm-menu') !== 'undefined' && $('#rm-menu') !== null) {
-                $('#rm-menu').css('top', '');
+            var $menuMobile = $('#rm-menu');
+            if ($menuMobile.length) {
+                $menuMobile.css('top', '');
             }
         }
     }
 
-    // Run on page load
+    // Запуск при завантаженні та ресайзі з дебаунсом для покращення продуктивності
     octPositionMenu();
 
-    // Re-run on window resize
-    $(window).on('resize', octPositionMenu);
+    var resizeTimer;
+    $(window).on('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(octPositionMenu, 50);
+    });
 });
 </script>
 <!-- ========== END OF SCRIPT ========== -->
-</body>
-</html>
